@@ -26,4 +26,4 @@ jobs:
         run: ruff check
 
       - name: Run Ruff Format Check
-        run: ruff format --check --diff --line-length=88
+        run: ruff format --check --diff
