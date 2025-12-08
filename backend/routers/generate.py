@@ -105,7 +105,8 @@ def _build_prompt(req: AIPrompt) -> str:
     _prompt = f"""
     You are a professional technical writer for Zenn.
 
-    Write a high-quality technical article in Japanese based on the title below, and output ONLY a JSON object with the required fields.
+    Write a high-quality technical article in Japanese based on the title below,
+    and output ONLY a JSON object with the required fields.
 
     # Input Title
     {req.prompt}
@@ -136,7 +137,8 @@ def _build_prompt(req: AIPrompt) -> str:
 
     ## How to Create Effective Blog Titles
 
-    This guide explains **why blog titles are important** and the **key methods for choosing strong titles**.
+    This guide explains **why blog titles are important** and 
+    the **key methods for choosing strong titles**.
 
     ---
 
@@ -152,7 +154,8 @@ def _build_prompt(req: AIPrompt) -> str:
     3. Keep it around **30 full-width characters** (≈ **15–18 English words**)
     4. Include important target keywords
 
-    > These four points help you create titles that attract more readers and improve article performance.
+    > These four points help you create titles that attract more 
+    readers and improve article performance.
 
     ---
 
@@ -160,12 +163,15 @@ def _build_prompt(req: AIPrompt) -> str:
 
     | Type | Choose this when… |
     |-------|----------------|
-    | **Tech** | The article covers software, hardware, hands-on testing, implementation results, or technical insights from real experience |
-    | **Idea** | The article covers careers, management, abstract thinking about technology, or information summaries not directly tied to technical implementation |
+    | **Tech** | The article covers software, hardware, hands-on testing, implementation results,
+    or technical insights from real experience |
+    | **Idea** | The article covers careers, management, abstract thinking about technology,
+    or information summaries not directly tied to technical implementation |
 
     ---
 
-    Use these hints to choose the most suitable **title** and **type**, and create content that reaches the right audience.
+    Use these hints to choose the most suitable **title** and **type**, 
+    and create content that reaches the right audience.
 
     # Output ONLY a valid JSON object.
     Do not include explanations, markdown, or code fences.

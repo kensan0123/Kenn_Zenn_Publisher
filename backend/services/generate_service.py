@@ -17,9 +17,7 @@ def generate_article(req: GenerateRequest) -> GeneratedResponse:
     """
     try:
         logger.info(f"Generating article with theme: {req.title}")
-        response = requests.post(
-            f"{KENN_ZENN_URL}/generate", json=req.model_dump(), timeout=20
-        )
+        response = requests.post(f"{KENN_ZENN_URL}/generate", json=req.model_dump(), timeout=20)
         logger.info("Article generation request completed")
         logger.info(f"Response body: {response.text}")
         response.raise_for_status()
@@ -61,7 +59,9 @@ def generate_article(req: GenerateRequest) -> GeneratedResponse:
     )
 
     logger.info(
-        f"Article generated successfully. slug: {generate_response.slug}, status: {generate_response.status}"
+        f"Article generated successfully."
+        f"slug: {generate_response.slug},"
+        f"status: {generate_response.status}"
     )
 
     return generate_response
