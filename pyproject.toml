@@ -32,15 +32,8 @@ target-version = "py311"
 line-length = 88
 
 [tool.ruff.lint]
-select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "UP", # pyupgrade
-]
-ignore = ["E501"]  # 行の長さは自動整形に任せる
+select = ["E", "F"]
+ignore = ["F401"]
 
 [tool.ruff.format]
 quote-style = "double"
