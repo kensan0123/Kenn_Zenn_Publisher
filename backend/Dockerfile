@@ -7,7 +7,7 @@ COPY pyproject.toml ./
 COPY backend/ ./backend/
 
 # 依存関係をインストール（本番環境のみ）
-RUN pip install --no-cache-dir -e .
+RUN pip install --upgrade pip && pip install -e .[dev]
 
 # FastAPI 実行ディレクトリ（backendフォルダ内）
 WORKDIR /app/backend

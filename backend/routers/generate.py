@@ -12,8 +12,9 @@ from schemas.generate_schema import (
 )
 from services.generate_service import generate_article
 
-OLLAMA_URL: str = Settings.OLLAMA_URL
-openai_aip_key: str = Settings.openai_api_key
+settings: Settings = Settings()
+OLLAMA_URL: str = settings.OLLAMA_URL
+openai_aip_key: str = settings.openai_api_key
 
 router = APIRouter(prefix="/generate", tags=["Generate"])
 

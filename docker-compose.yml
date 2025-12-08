@@ -11,7 +11,8 @@ services:
     depends_on:
       - ollama
     environment:
-      - OLLAMA_URL=http://ollama:11434
+      - KENN_ZENN_URL=${KENN_ZENN_URL}
+      - OLLAMA_URL=${OLLAMA_URL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
 
   ollama:

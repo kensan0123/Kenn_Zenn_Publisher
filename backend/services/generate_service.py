@@ -5,7 +5,8 @@ from exceptions.api_exception import KennZennAPIError
 from requests.exceptions import ConnectionError, HTTPError, Timeout
 from schemas.generate_schema import GeneratedResponse, GenerateRequest
 
-KENN_ZENN_URL: str = Settings.KENN_ZENN_URL
+settings: Settings = Settings()
+KENN_ZENN_URL: str = settings.KENN_ZENN_URL
 
 
 def generate_article(req: GenerateRequest) -> GeneratedResponse:
