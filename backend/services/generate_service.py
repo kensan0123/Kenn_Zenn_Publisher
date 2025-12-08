@@ -1,9 +1,11 @@
 import requests
 from core.logger import logger
-from core.settings import KENN_ZENN_URL
+from core.settings import Settings
 from exceptions.api_exception import KennZennAPIError
 from requests.exceptions import ConnectionError, HTTPError, Timeout
 from schemas.generate_schema import GeneratedResponse, GenerateRequest
+
+KENN_ZENN_URL: str = Settings.KENN_ZENN_URL
 
 
 def generate_article(req: GenerateRequest) -> GeneratedResponse:

@@ -1,7 +1,7 @@
 import json
 
 import requests
-from core.settings import OLLAMA_URL, openai_api_key
+from core.settings import Settings
 from fastapi import APIRouter
 from openai import OpenAI
 from schemas.generate_schema import (
@@ -11,6 +11,9 @@ from schemas.generate_schema import (
     GenerateRequest,
 )
 from services.generate_service import generate_article
+
+OLLAMA_URL: str = Settings.OLLAMA_URL
+openai_aip_key: str = Settings.openai_api_key
 
 router = APIRouter(prefix="/generate", tags=["Generate"])
 
@@ -35,7 +38,7 @@ def generate_openai(req: AIGenerateRequest) -> GeneratedResponse:
     :type req: AIGenerateRequest
     """
 
-    client = OpenAI(api_key=openai_api_key)
+    client = OpenAI(api_key=openai_aip_key)
 
     ai_prompt: AIPrompt = AIPrompt(prompt=req.prompt)
     _prompt = _build_prompt(req=ai_prompt)

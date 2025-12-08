@@ -1,9 +1,11 @@
 import requests
 from core.logger import logger
-from core.settings import KENN_ZENN_URL
+from core.settings import Settings
 from exceptions.api_exception import KennZennAPIError
 from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
 from schemas.publish_schemas import PublishRequest, PublishResponse
+
+KENN_ZENN_URL: str = Settings.KENN_ZENN_URL
 
 
 def publish_article(req: PublishRequest) -> PublishResponse:
