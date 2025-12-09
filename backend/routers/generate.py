@@ -12,9 +12,8 @@ from schemas.generate_schema import (
 )
 from services.generate_service import generate_article
 
-settings: Settings = Settings()
-OLLAMA_URL: str = settings.OLLAMA_URL
-openai_aip_key: str = settings.openai_api_key
+settings: Settings = Settings()  # type: ignore
+openai_aip_key: str = settings.OPENAI_API_KEY
 
 router = APIRouter(prefix="/generate", tags=["Generate"])
 
@@ -46,7 +45,6 @@ def generate_openai(req: AIGenerateRequest) -> GeneratedResponse:
 
     response = client.responses.create(model="gpt-5-nano", input=_prompt)
 
-    print(response)
     response_content = response.output_text
     parsed_json = json.loads(response_content)
 
@@ -54,44 +52,6 @@ def generate_openai(req: AIGenerateRequest) -> GeneratedResponse:
     article_emoji = parsed_json.get("emoji", "")
     article_type = parsed_json.get("type", "")
     article_content = parsed_json.get("content", "")
-
-    generate_request: GenerateRequest = GenerateRequest(
-        title=article_title,
-        emoji=article_emoji,
-        type=article_type,
-        content=article_content,
-    )
-
-    article_response: GeneratedResponse = generate_article(req=generate_request)
-
-    return article_response
-
-
-@router.post("/llama")
-def generate_llama(req: AIGenerateRequest) -> GeneratedResponse:
-    """
-    Docstring for generate_ai
-
-    :param req: Description
-    :type req: AIGenerateRequest
-    """
-    ai_prompt: AIPrompt = AIPrompt(prompt=req.prompt)
-    _prompt = _build_prompt(req=ai_prompt)
-
-    response = requests.post(
-        f"{OLLAMA_URL}/api/generate",
-        json={"model": "llama3", "prompt": _prompt, "stream": False},
-    )
-
-    print(response)
-    response_json = response.json()
-    raw_response = response_json.get("response", "")
-    parsed = json.loads(raw_response)
-
-    article_title = parsed.get("title", "")
-    article_emoji = parsed.get("emoji", "")
-    article_type = parsed.get("type", "")
-    article_content = parsed.get("content", "")
 
     generate_request: GenerateRequest = GenerateRequest(
         title=article_title,

@@ -11,17 +11,8 @@ services:
     depends_on:
       - ollama
     environment:
-      - KENN_ZENN_URL=${KENN_ZENN_URL}
-      - OLLAMA_URL=${OLLAMA_URL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-
-  ollama:
-    image: ollama/ollama
-    container_name: zenn-ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama:/root/.ollama
+      - ARTICLE_DIR=${ARTICLE_DIR:-./articles}
 
 volumes:
   ollama:
