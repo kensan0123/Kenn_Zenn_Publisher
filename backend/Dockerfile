@@ -20,10 +20,6 @@ RUN pip install --upgrade pip && pip install -e .[dev]
 # Zenn CLIのグローバルインストール
 RUN npm install -g zenn-cli
 
-# Zennプロジェクトの初期化（articles/, books/ディレクトリを作成）
-# 初回のみ実行されるように条件付きで実行
-RUN npx zenn init || true
-
 # エントリーポイントスクリプトをコピー
 COPY backend/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

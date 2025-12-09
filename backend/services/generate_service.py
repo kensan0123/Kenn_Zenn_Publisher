@@ -1,6 +1,6 @@
 from core.logger import logger
 from core.settings import Settings
-from backend.exceptions.exceptions import GenarateException
+from backend.exceptions.exceptions import GenerateException
 from requests.exceptions import Timeout
 from schemas.generate_schema import GeneratedResponse, GenerateRequest
 from backend.services.zenn_service import ZennService
@@ -30,12 +30,12 @@ class GenerateService:
 
         except Timeout:
             logger.error(msg="Request to Kenn_Zenn API timed out at /generate endpoint")
-            raise GenarateException(
+            raise GenerateException(
                 message="timeout error",
                 endpoint="/generate",
             )
         except ValueError:
-            raise GenarateException(
+            raise GenerateException(
                 message="value error",
                 endpoint="/generate",
             )

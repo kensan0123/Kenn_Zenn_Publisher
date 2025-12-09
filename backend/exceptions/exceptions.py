@@ -1,4 +1,4 @@
-class GenarateException(Exception):
+class GenerateException(Exception):
     """Generate Error"""
 
     def __init__(self, message: str, endpoint: str, status_code: int | None = None):

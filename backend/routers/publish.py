@@ -1,10 +1,10 @@
 from backend.exceptions.exceptions import PublishException
 from fastapi import APIRouter, HTTPException
 from schemas.publish_schemas import PublishRequest, PublishResponse
-from services.publish_service import PublishSearvice
+from services.publish_service import PublishService
 
 router = APIRouter(prefix="/publish", tags=["Publish"])
-publisher: PublishSearvice = PublishSearvice()
+publisher: PublishService = PublishService()
 
 
 @router.post("/")

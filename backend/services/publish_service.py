@@ -8,7 +8,7 @@ from backend.services.zenn_service import ZennService
 settings: Settings = Settings()
 
 
-class PublishSearvice:
+class PublishService:
     def __init__(self):
         self._settings: Settings = Settings()
         self._zenn_srevice: ZennService = ZennService()
