@@ -1,9 +1,10 @@
-from exceptions.api_exception import KennZennAPIError
+from backend.exceptions.exceptions import PublishException
 from fastapi import APIRouter, HTTPException
 from schemas.publish_schemas import PublishRequest, PublishResponse
-from services.publish_service import publish_article
+from services.publish_service import PublishSearvice
 
 router = APIRouter(prefix="/publish", tags=["Publish"])
+publisher: PublishSearvice = PublishSearvice()
 
 
 @router.post("/")
@@ -19,9 +20,9 @@ def publish(req: PublishRequest) -> PublishResponse:
     """
 
     try:
-        publish_response: PublishResponse = publish_article(req=req)
+        publish_response: PublishResponse = publisher.publish_article(req=req)
         return publish_response
-    except KennZennAPIError as e:
+    except PublishException as e:
         raise HTTPException(
             status_code=e.status_code or 500,
             detail={

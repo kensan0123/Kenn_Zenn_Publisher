@@ -1,7 +1,11 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings
+import os
 
 
 class Settings(BaseSettings):
-    OLLAMA_URL: str
-    KENN_ZENN_URL: str
-    openai_api_key: str
+    OPENAI_API_KEY: str = Field(pattern=r"^sk-.+")
+    ROOT_DIR: str
+    ARTICLE_DIR: str = Field(default="./articles")
+    GITHUB_USER: str
+    GITHUB_PAT: str

@@ -10,3 +10,8 @@ class PublishRequest(BaseModel):
 class PublishResponse(BaseModel):
     status: Literal["published!", "failed"]
     slug: str
+
+
+class PublishResult(BaseModel):
+    result: bool
+    slug: str
