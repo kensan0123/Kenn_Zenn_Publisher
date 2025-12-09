@@ -4,11 +4,10 @@ import os
 
 
 class Settings(BaseSettings):
-    def __init__(self):
-        self.OPENAI_API_KEY: str = Field(pattern=r"^sk-.+")
-        self.ARTICLE_DIR: str = Field(default="./articles")
-        self.GITHUB_USER: str
-        self.GITHUB_PAT: str
+    OPENAI_API_KEY: str = Field(pattern=r"^sk-.+")
+    ARTICLE_DIR: str = Field(default="./articles")
+    GITHUB_USER: str
+    GITHUB_PAT: str
 
     def create_netrc(self):
         home = os.path.expanduser("~")
