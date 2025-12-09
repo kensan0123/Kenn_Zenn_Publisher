@@ -10,7 +10,9 @@ from backend.schemas.publish_schemas import PublishRequest, PublishResponse
 from backend.exceptions.exceptions import UntitleException
 
 settings: Settings = Settings()
-ROOT_DIR: Path = Path("./")
+# ROOT_DIRは/appに設定（Zenn CLIの実行ディレクトリ）
+ROOT_DIR: Path = Path("/app")
+# ARTICLES_DIRは絶対パスで設定
 ARTICLES_DIR: Path = Path(settings.ARTICLE_DIR)
 
 

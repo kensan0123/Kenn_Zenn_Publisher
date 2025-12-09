@@ -18,7 +18,20 @@ build/
 # macOS
 .DS_Store
 
-
+# IDEs
 .idea/
+.vscode/
 .venv/
 venv/
+
+# Zenn content directories
+# Note: articles/ と books/ はGitに含めるため、ここでは除外しない
+# ただし、.zenn/ ディレクトリは除外する
+.zenn/
+
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

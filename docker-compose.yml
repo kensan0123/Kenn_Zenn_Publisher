@@ -3,18 +3,29 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    container_name: zenn-fastapi
+    container_name: zenn-publisher-api
     ports:
       - "8000:8000"
     volumes:
+      # バックエンドコードのホットリロード
       - ./backend:/app/backend
+      # Zenn記事ディレクトリ（ホストと同期）
+      - ./articles:/app/articles
+      - ./books:/app/books
+      # .gitディレクトリも同期（git操作のため）
+      - ./.git:/app/.git
     environment:
+      # OpenAI設定
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ARTICLE_DIR=${ARTICLE_DIR:-./articles}
-      - GITHUB_PAT=$(GITHUB_PA)
-      - GITHUB_USER=$(GITHUB_USER)
-      - USER_NAME=$(USER_NAME)
-      - USER_EMAIL=$(USER_EMAIL)
 
-volumes:
-  ollama:
+      # GitHub設定
+      - GITHUB_PAT=${GITHUB_PAT}
+      - GITHUB_USER=${GITHUB_USER}
+
+      # Git設定
+      - USER_NAME=${USER_NAME}
+      - USER_EMAIL=${USER_EMAIL}
+
+      # アプリケーション設定
+      - ARTICLE_DIR=/app/articles
+    working_dir: /app/backend
