@@ -2,27 +2,33 @@ import re
 import subprocess
 from pathlib import Path
 from typing import List
-from dataclasses import dataclass
 from backend.core.settings import Settings
 from backend.services.file_service import FileService
 from fastapi import HTTPException
+from backend.schemas.generate_schema import GenerateRequest, GeneratedResponse
+from backend.schemas.publish_schemas import PublishRequest, PublishResponse
+from backend.exceptions.exceptions import UntitleException
 
 settings: Settings = Settings()
 ROOT_DIR: Path = Path("./")
 ARTICLES_DIR: Path = Path(settings.ARTICLE_DIR)
 
 
-class GenerateService:
+class ZennService:
     def __init__(self) -> None:
         self.file_service = FileService()
 
-    def generate_article(
-        self, title: str, emoji: str, content: str, type: str, slug: str | None = None
-    ):
+    def generate_article(self, article_info: GenerateRequest) -> GeneratedResponse:
         """
-        Zenn CLIで新規記事を作成し
-        自動生成された slug の md ファイルを特定して中身を書き換える
+        Zenn CLIで新規記事を作成し,
+        自動生成された md の slug(id)を返却する.
         """
+
+        title: str = article_info.title
+        emoji: str = article_info.emoji
+        content: str = article_info.content
+        type: str = article_info.type
+        slug: str | None = None
 
         # CLI実行前ファイル一覧
         before_files = set(ARTICLES_DIR.glob("*.md"))
@@ -91,12 +97,19 @@ class GenerateService:
 
         article_slug: str = self.file_service.get_article_slug(article_path=article_path)
 
-        return article_slug
+        status: str = "success"
+        article_status: str = status
+
+        generate_response: GeneratedResponse = GeneratedResponse(
+            status=article_status,
+            slug=article_slug,
+        )
+        return generate_response
 
     def add_topics(
-        self, article_slug: str, topic: str
-    ) -> str:  # ToDo: topicは複数登録できるのうに改良
-        article_path = self.file_service.get_article_path(article_slug=article_slug)
+        self, slug: str, topic: str
+    ) -> GeneratedResponse:  # ToDo: topicは複数登録できるのうに改良
+        article_path = self.file_service.get_article_path(article_slug=slug)
 
         with Path(article_path).open("r") as f:
             content = f.read()
@@ -133,28 +146,28 @@ class GenerateService:
                 with Path(article_path).open("w") as f:
                     f.write(new_content)
 
-                slug: str = self.file_service.get_article_slug(article_path=article_path)
+                article_slug: str = self.file_service.get_article_slug(article_path=article_path)
 
-                return slug
+                article_response: GeneratedResponse = GeneratedResponse(
+                    status="success",
+                    slug=article_slug,
+                )
+
+                return article_response
             else:
+                article_response: GeneratedResponse = GeneratedResponse(
+                    status="error",
+                    slug=slug,
+                )
                 raise ValueError("topics: の行が見つかりません")
-
         else:
+            article_response: GeneratedResponse = GeneratedResponse(
+                status="error",
+                slug=slug,
+            )
             raise ValueError("front matter が存在しません")
 
-
-@dataclass
-class PublishResult:
-    result: bool
-    slug: str
-
-
-class PublishService:
-    def __init__(self, root_dir: Path = ROOT_DIR) -> None:
-        self.file_service = FileService()
-        self.root_dir = root_dir
-
-    def publish_article(self, slug: str) -> PublishResult:
+    def publish_article(self, slug: str) -> PublishResponse:
         settings.create_netrc()
 
         # 対象ファイルを検索
@@ -174,31 +187,31 @@ class PublishService:
         if match_title:
             article_title = match_title.group(1)
         else:
-            article_title = "Untitled"
+            raise UntitleException(message="publishing article has no title.", endpoint="/publish")
 
         with open(article_path, "w") as file:
             file.write(new_content)
 
         article_slug: str = self.file_service.get_article_slug(article_path=article_path)
 
-        # Git 連携
+        # Git
         try:
             subprocess.run(
                 ["git", "add", "."],
-                cwd=str(self.root_dir),
+                cwd=str(ROOT_DIR),
                 check=True,
                 capture_output=True,
                 text=True,
             )
             subprocess.run(
                 ["git", "commit", "-m", f"publish {article_title}"],
-                cwd=str(self.root_dir),
+                cwd=str(ROOT_DIR),
                 check=True,
                 capture_output=True,
                 text=True,
             )
             subprocess.run(
-                ["git", "push"], cwd=str(self.root_dir), check=True, capture_output=True, text=True
+                ["git", "push"], cwd=str(ROOT_DIR), check=True, capture_output=True, text=True
             )
 
         except subprocess.CalledProcessError as e:
@@ -207,8 +220,11 @@ class PublishService:
                     status_code=500, detail="GitHub credential missing. Configure PAT or SSH key."
                 )
             else:
-                print(f"git_result: {e}\nstdout: {e.stdout}\nstderr: {e.stderr}")
+                raise Exception(f"git_result: {e}\nstdout: {e.stdout}\nstderr: {e.stderr}")
 
-            return PublishResult(False, article_slug)
+        publish_article: PublishResponse = PublishResponse(
+            status="published!",
+            slug=article_slug,
+        )
 
-        return PublishResult(True, article_slug)
+        return publish_article

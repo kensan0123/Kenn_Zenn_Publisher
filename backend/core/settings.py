@@ -1,12 +1,14 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings
-from pathlib import Path
 import os
 
 
 class Settings(BaseSettings):
-    OPENAI_API_KEY: str = Field(pattern=r"^sk-.+")
-    ARTICLE_DIR: str = Field(default="./articles")
+    def __init__(self):
+        self.OPENAI_API_KEY: str = Field(pattern=r"^sk-.+")
+        self.ARTICLE_DIR: str = Field(default="./articles")
+        self.GITHUB_USER: str
+        self.GITHUB_PAT: str
 
     def create_netrc(self):
         home = os.path.expanduser("~")
@@ -15,8 +17,8 @@ class Settings(BaseSettings):
         content = "\n".join(
             [
                 "machine github.com",
-                f"login {os.getenv('GITHUB_USER', '')}",
-                f"password {os.getenv('GITHUB_PAT', '')}",
+                f"login {self.GITHUB_USER}",
+                f"password {self.GITHUB_PAT}",
             ]
         )
 

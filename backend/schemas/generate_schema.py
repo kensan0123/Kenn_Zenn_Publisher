@@ -15,7 +15,7 @@ class AIGenerateRequest(BaseModel):
 
 
 class GeneratedResponse(BaseModel):
-    status: Literal["generated!", "fail"]
+    status: Literal["success", "error"]
     slug: str
 
 

@@ -1,19 +1,19 @@
 import json
-
-import requests
-from core.settings import Settings
 from fastapi import APIRouter
 from openai import OpenAI
+
+from core.settings import Settings
 from schemas.generate_schema import (
     AIGenerateRequest,
     AIPrompt,
     GeneratedResponse,
     GenerateRequest,
 )
-from services.generate_service import generate_article
+from services.generate_service import GenerateService
 
-settings: Settings = Settings()  # type: ignore
+settings: Settings = Settings()
 openai_aip_key: str = settings.OPENAI_API_KEY
+generator: GenerateService = GenerateService()
 
 router = APIRouter(prefix="/generate", tags=["Generate"])
 
@@ -23,8 +23,8 @@ def generate(req: GenerateRequest) -> GeneratedResponse:
     """
     手書きで記事を作成する場合に使用する関数
     """
-
-    article_response: GeneratedResponse = generate_article(req=req)
+    generate_request: GenerateRequest = req
+    article_response: GeneratedResponse = generator.generate_article(article_info=generate_request)
 
     return article_response
 
@@ -60,7 +60,7 @@ def generate_openai(req: AIGenerateRequest) -> GeneratedResponse:
         content=article_content,
     )
 
-    article_response: GeneratedResponse = generate_article(req=generate_request)
+    article_response: GeneratedResponse = generator.generate_article(article_info=generate_request)
 
     return article_response
 
