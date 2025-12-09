@@ -6,12 +6,12 @@ from backend.core.settings import Settings
 from backend.services.file_service import FileService
 from fastapi import HTTPException
 from backend.schemas.generate_schema import GenerateRequest, GeneratedResponse
-from backend.schemas.publish_schemas import PublishRequest, PublishResponse
+from backend.schemas.publish_schemas import PublishResponse
 from backend.exceptions.exceptions import UntitleException
 
 settings: Settings = Settings()
 # ROOT_DIRは/appに設定（Zenn CLIの実行ディレクトリ）
-ROOT_DIR: Path = Path("/app")
+ROOT_DIR: Path = Path(settings.ROOT_DIR)
 # ARTICLES_DIRは絶対パスで設定
 ARTICLES_DIR: Path = Path(settings.ARTICLE_DIR)
 
@@ -170,8 +170,6 @@ class ZennService:
             raise ValueError("front matter が存在しません")
 
     def publish_article(self, slug: str) -> PublishResponse:
-        settings.create_netrc()
-
         # 対象ファイルを検索
         md_files = list(ARTICLES_DIR.glob(f"*{slug}*.md"))
         if not md_files:

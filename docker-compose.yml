@@ -12,8 +12,9 @@ services:
       # Zenn記事ディレクトリ（ホストと同期）
       - ./articles:/app/articles
       - ./books:/app/books
-      # .gitディレクトリも同期（git操作のため）
-      - ./.git:/app/.git
+      # # .gitディレクトリも同期（git操作のため）
+      # - ./.git:/app/.git
+      # - ./.gitignore:/app/.gitignore
     environment:
       # OpenAI設定
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -27,5 +28,6 @@ services:
       - USER_EMAIL=${USER_EMAIL}
 
       # アプリケーション設定
+      - ROOT_DIR=/app
       - ARTICLE_DIR=/app/articles
     working_dir: /app/backend
