@@ -5,8 +5,8 @@ from typing import List
 from backend.core.settings import Settings
 from backend.services.file_service import FileService
 from fastapi import HTTPException
-from backend.schemas.zenn_article_schema import GenerateRequest, GeneratedResponse
-from backend.schemas.zenn_article_schema import PublishResponse
+from backend.schemas.zenn_article_schemas import GenerateRequest, GeneratedResponse
+from backend.schemas.zenn_article_schemas import PublishResponse
 from backend.exceptions.exceptions import UntitleException
 
 settings: Settings = Settings()

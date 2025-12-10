@@ -2,7 +2,7 @@ from core.logger import logger
 from core.settings import Settings
 from backend.exceptions.exceptions import PublishException
 from requests.exceptions import Timeout
-from backend.schemas.zenn_article_schema import PublishRequest, PublishResponse
+from backend.schemas.zenn_article_schemas import PublishRequest, PublishResponse
 from backend.services.zenn_service import ZennService
 
 settings: Settings = Settings()

@@ -1,6 +1,6 @@
 from backend.exceptions.exceptions import PublishException
 from fastapi import APIRouter, HTTPException
-from backend.schemas.zenn_article_schema import PublishRequest, PublishResponse
+from backend.schemas.zenn_article_schemas import PublishRequest, PublishResponse
 from services.publish_service import PublishService
 
 router = APIRouter(prefix="/publish", tags=["Publish"])
