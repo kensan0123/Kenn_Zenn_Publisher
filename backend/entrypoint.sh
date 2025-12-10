@@ -3,6 +3,10 @@ set -e
 
 echo "[INFO] Starting Zenn Publisher API..."
 
+if [ -f "$GITHUB_PAT_FILE" ]; then
+    GITHUB_PAT=$(cat "$GITHUB_PAT_FILE")
+fi
+
 # Git設定（環境変数から）
 if [ -n "$USER_NAME" ] && [ -n "$USER_EMAIL" ]; then
     git config --global user.name "$USER_NAME"
