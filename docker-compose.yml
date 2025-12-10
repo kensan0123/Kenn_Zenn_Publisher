@@ -22,6 +22,7 @@ services:
       - OPENAI_API_KEY_FILE=/run/secrets/openai_api_key
       - ROOT_DIR=/app
       - ARTICLE_DIR=/app/articles
+      - ANTHROPIC_API_KEY_FILE=/run/secrets/anthropic_api_key
     working_dir: /app/backend
 
 secrets:
@@ -29,3 +30,5 @@ secrets:
     file: ./secrets/github_pat.txt
   openai_api_key:
     file: ./secrets/openai_api_key.txt
+  anthropic_api_key:
+    file: ./secrets/anthropic_api_key

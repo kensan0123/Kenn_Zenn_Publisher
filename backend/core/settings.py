@@ -6,6 +6,8 @@ from pathlib import Path
 class Settings(BaseSettings):
     OPENAI_API_KEY: str | None = None
     OPENAI_API_KEY_FILE: str | None = None
+    ANTHROPIC_API_KEY: str | None = None
+    ANTHROPIC_API_KEY_FILE: str | None = None
     ROOT_DIR: str
     ARTICLE_DIR: str = Field(default="./articles")
     GITHUB_USER: str
@@ -38,6 +40,14 @@ class Settings(BaseSettings):
         """OPENAI_API_KEYが必須であることを検証"""
         if not v or not v.startswith("sk-"):
             raise ValueError("Valid OPENAI_API_KEY is required")
+        return v
+
+    @field_validator("ANTHROPIC_API_KEY")
+    @classmethod
+    def validate_anthropic_key(cls, v):
+        """ANTHROPIC_API_KEYが必須であることを検証"""
+        if not v or not v.startswith("sk-"):
+            raise ValueError("Valid ANTHROPIC_API_KEY is requierd")
         return v
 
     @field_validator("GITHUB_PAT")

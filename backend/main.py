@@ -1,6 +1,7 @@
+from backend.routers import assist
 from core.logger import logger
 from fastapi import FastAPI
-from routers import generate, publish, assistant
+from routers import generate, publish
 
 app = FastAPI(
     title="Zenn Publisher API",
@@ -17,6 +18,6 @@ async def root():
 
 app.include_router(generate.router)
 app.include_router(publish.router)
-app.include_router(assistant.router)
+app.include_router(assist.router)
 
 logger.info("FastAPI application started successfully")
