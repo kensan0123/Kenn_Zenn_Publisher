@@ -2,23 +2,25 @@
 
 ## 概要
 
-Zenn記事の生成と公開を自動化するFastAPIサービスです。Docker環境にZenn CLIを統合し、OpenAI APIを使った記事生成、手動コンテンツでの記事作成、GitHubへの自動公開をサポートします。
+Zenn 記事の生成と公開を自動化する FastAPI サービスです。Docker 環境に Zenn CLI を統合し、OpenAI API を使った記事生成、手動コンテンツでの記事作成、GitHub への自動公開をサポートします。
 
 ## 主な機能
 
-- ✨ **AI記事生成**: OpenAI APIを使ってタイトルから記事を自動生成
-- 📝 **手動記事作成**: 用意したコンテンツでZenn記事を作成
-- 🚀 **自動公開**: GitHubへのcommit/pushで記事を公開
-- 🐳 **Docker統合**: Python + Node.js + Zenn CLIを1コンテナで完結
+- ✨ **AI 記事生成**: OpenAI API を使ってタイトルから記事を自動生成
+- 📝 **手動記事作成**: 用意したコンテンツで Zenn 記事を作成
+- 🚀 **自動公開**: GitHub への commit/push で記事を公開
+- 🐳 **Docker 統合**: Python + Node.js + Zenn CLI を 1 コンテナで完結
 - 🔄 **ホットリロード**: コード変更が即座に反映
 
 ## 技術スタック
 
-- **Backend**: FastAPI (Python 3.11)
-- **記事管理**: Zenn CLI (Node.js 20.x)
-- **AI**: OpenAI API
-- **コンテナ**: Docker / Docker Compose
-- **バージョン管理**: Git / GitHub
+<p style="display: inline">
+  <img src="https://qiita-user-contents.imgix.net/https%3A%2F%2Fimg.shields.io%2Fbadge%2F-Node.js-000000.svg%3Flogo%3Dnode.js%26style%3Dfor-the-badge?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&s=58a7faca7c79608cc0f2f1dd1e56645c">
+  <img src="https://qiita-user-contents.imgix.net/https%3A%2F%2Fimg.shields.io%2Fbadge%2F-Python-F2C63C.svg%3Flogo%3Dpython%26style%3Dfor-the-badge?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&s=c17144ccc12f9c19e9dbba2eec5c7980">
+  <img src="https://qiita-user-contents.imgix.net/https%3A%2F%2Fimg.shields.io%2Fbadge%2F-fastapi-009688.svg%3Flogo%3DFastAPI%26style%3Dfor-the-badge%26logoColor%3Dblack?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&s=8dd66665fcc23dfcdeb481e9f1e62dc4">
+  <img src="https://qiita-user-contents.imgix.net/https%3A%2F%2Fimg.shields.io%2Fbadge%2F-Docker-1488C6.svg%3Flogo%3Ddocker%26style%3Dfor-the-badge?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&s=14a6094ef3229a37e7d5126c6cb6ac7a">
+  <img src="https://qiita-user-contents.imgix.net/https%3A%2F%2Fimg.shields.io%2Fbadge%2F-githubactions-FFFFFF.svg%3Flogo%3Dgithub-actions%26style%3Dfor-the-badge?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&s=2476e16acd4c54fb4bf78852e6390101">
+</p>
 
 ---
 
@@ -29,7 +31,7 @@ Zenn記事の生成と公開を自動化するFastAPIサービスです。Docker
 - Docker & Docker Compose
 - Git
 - OpenAI API Key
-- GitHub Personal Access Token (repo権限)
+- GitHub Personal Access Token (repo 権限)
 
 ### 1. リポジトリをクローン
 
@@ -65,24 +67,27 @@ ARTICLE_DIR=/app/articles
 ROOT_DIR=/app
 ```
 
-**GitHub Personal Access Tokenの取得方法:**
+**GitHub Personal Access Token の取得方法:**
+
 1. GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. "Generate new token" をクリック
 3. `repo` 権限にチェックを入れる
 4. 生成されたトークンを`GITHUB_PAT`に設定
 
-### 3. Dockerコンテナを起動
+### 3. Docker コンテナを起動
 
 ```bash
 docker-compose up -d --build
 ```
 
 起動ログを確認:
+
 ```bash
 docker-compose logs -f
 ```
 
 以下のようなログが表示されれば成功:
+
 ```
 [INFO] Starting Zenn Publisher API...
 [INFO] Git configured: Your Name <your.email@example.com>
@@ -105,6 +110,7 @@ curl http://localhost:8000/
 ```
 
 **レスポンス:**
+
 ```json
 {
   "status": "ok",
@@ -127,6 +133,7 @@ curl -X POST http://localhost:8000/generate/ \
 ```
 
 **レスポンス:**
+
 ```json
 {
   "status": "success",
@@ -149,7 +156,7 @@ curl -X POST http://localhost:8000/generate/ai \
   }'
 ```
 
-OpenAI APIが記事内容を自動生成します。
+OpenAI API が記事内容を自動生成します。
 
 ### 記事公開
 
@@ -161,24 +168,25 @@ curl -X POST http://localhost:8000/publish/ \
   }'
 ```
 
-記事の`published`フラグが`true`に変更され、GitHubにcommit & pushされます。
+記事の`published`フラグが`true`に変更され、GitHub に commit & push されます。
 
 ---
 
-## API仕様
+## API 仕様
 
 ### エンドポイント一覧
 
-| メソッド | エンドポイント | 説明 |
-|---------|---------------|------|
-| GET | `/` | ヘルスチェック |
-| POST | `/generate/` | 手動コンテンツで記事作成 |
-| POST | `/generate/ai` | AI生成で記事作成 |
-| POST | `/publish/` | 記事をZennに公開 |
+| メソッド | エンドポイント | 説明                     |
+| -------- | -------------- | ------------------------ |
+| GET      | `/`            | ヘルスチェック           |
+| POST     | `/generate/`   | 手動コンテンツで記事作成 |
+| POST     | `/generate/ai` | AI 生成で記事作成        |
+| POST     | `/publish/`    | 記事を Zenn に公開       |
 
-### APIドキュメント
+### API ドキュメント
 
-FastAPIの自動生成ドキュメント:
+FastAPI の自動生成ドキュメント:
+
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
@@ -234,11 +242,11 @@ Kenn_Zenn_Publisher/
 
 ## 開発環境
 
-### ローカルでの開発（pre-commit使用）
+### ローカルでの開発（pre-commit 使用）
 
-Docker環境以外でも開発できます。
+Docker 環境以外でも開発できます。
 
-#### 1. Python環境のセットアップ
+#### 1. Python 環境のセットアップ
 
 ```bash
 python -m venv .venv
@@ -246,13 +254,13 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
-#### 2. pre-commitのインストール
+#### 2. pre-commit のインストール
 
 ```bash
 pre-commit install
 ```
 
-これで、コミット時に自動でRuffによるコードチェックとフォーマットが実行されます。
+これで、コミット時に自動で Ruff によるコードチェックとフォーマットが実行されます。
 
 #### 3. コード品質チェック
 
@@ -290,7 +298,7 @@ docker-compose exec fastapi npx zenn new:article
 
 ## トラブルシューティング
 
-### Q. ポート8000が既に使用されている
+### Q. ポート 8000 が既に使用されている
 
 ```bash
 # ポートを使用しているプロセスを確認
@@ -305,9 +313,10 @@ kill -9 <PID>
 - `.env`ファイルが存在するか確認
 - `docker-compose down` → `docker-compose up -d --build` で再起動
 
-### Q. Zenn CLIが動作しない
+### Q. Zenn CLI が動作しない
 
 コンテナ内で確認:
+
 ```bash
 docker-compose exec fastapi npx zenn --version
 ```
@@ -325,10 +334,12 @@ docker-compose exec fastapi npx zenn --version
 ⚠️ **本番環境での使用前に以下を確認してください:**
 
 1. **環境変数の管理**
+
    - `.env`ファイルは`.gitignore`に含まれていますが、誤ってコミットしないよう注意
-   - 本番環境ではDocker Secretsの使用を推奨（[Issue #5](https://github.com/kensan0123/Kenn_Zenn_Publisher/issues/5)参照）
+   - 本番環境では Docker Secrets の使用を推奨（[Issue #5](https://github.com/kensan0123/Kenn_Zenn_Publisher/issues/5)参照）
 
 2. **GitHub Personal Access Token**
+
    - 必要最小限の権限（`repo`のみ）で生成
    - 定期的にトークンをローテーション
 
@@ -345,7 +356,7 @@ MIT License
 
 ## 貢献
 
-プルリクエストやissueは大歓迎です！
+プルリクエストや issue は大歓迎です！
 
 1. このリポジトリをフォーク
 2. フィーチャーブランチを作成 (`git checkout -b feat/amazing-feature`)
