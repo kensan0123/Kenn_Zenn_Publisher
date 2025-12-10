@@ -16,7 +16,6 @@ class Settings(BaseSettings):
     @classmethod
     def load_secrets_from_files(cls, data: dict) -> dict:
         """Docker Secretsファイルから認証情報を読み込む"""
-        # OPENAI_API_KEY の読み込み
         if not data.get("OPENAI_API_KEY"):
             file_path = data.get("OPENAI_API_KEY_FILE")
             if file_path and Path(file_path).exists():
@@ -24,7 +23,6 @@ class Settings(BaseSettings):
                 if key.startswith("sk-"):
                     data["OPENAI_API_KEY"] = key
 
-        # GITHUB_PAT の読み込み
         if not data.get("GITHUB_PAT"):
             file_path = data.get("GITHUB_PAT_FILE")
             if file_path and Path(file_path).exists():
