@@ -49,4 +49,4 @@ class Settings(BaseSettings):
         return v
 
 
-settings: Settings = Settings()
+settings: Settings = Settings()  # type: ignore

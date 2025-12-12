@@ -3,10 +3,10 @@ import subprocess
 from pathlib import Path
 from typing import List
 from backend.core.settings import settings
-from backend.services.file_service import FileService
+from backend.zenn.file_service import FileService
 from fastapi import HTTPException
-from backend.schemas.zenn_article_schemas import GenerateRequest, GeneratedResponse
-from backend.schemas.zenn_article_schemas import PublishResponse
+from backend.zenn.zenn_article_schemas import GenerateRequest, GeneratedResponse
+from backend.zenn.zenn_article_schemas import PublishResponse
 from backend.exceptions.exceptions import UntitleException
 
 

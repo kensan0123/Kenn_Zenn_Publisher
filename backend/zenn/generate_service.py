@@ -2,8 +2,8 @@ from core.logger import logger
 from core.settings import settings
 from backend.exceptions.exceptions import GenerateException
 from requests.exceptions import Timeout
-from backend.schemas.zenn_article_schemas import GeneratedResponse, GenerateRequest
-from backend.services.zenn_service import ZennService
+from backend.zenn.zenn_article_schemas import GeneratedResponse, GenerateRequest
+from backend.zenn.zenn_service import ZennService
 
 
 class GenerateService:

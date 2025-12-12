@@ -87,6 +87,8 @@ class SuggestAgent:
         return "Unknown tool"
 
     def _build_tools(self) -> list[ToolUnionParam]:
+        """tools buildeing for anthropic agent"""
+
         tools: list[ToolUnionParam] = [
             {
                 "name": "web_search",
@@ -101,6 +103,6 @@ class SuggestAgent:
                     },
                     "required": ["query"],
                 },
-            }
-        ]  # type: ignore
+            }  # type: ignore
+        ]
         return tools

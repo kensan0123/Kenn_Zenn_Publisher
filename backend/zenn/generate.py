@@ -3,13 +3,13 @@ from fastapi import APIRouter
 from openai import OpenAI
 
 from core.settings import settings
-from backend.schemas.zenn_article_schemas import (
+from backend.zenn.zenn_article_schemas import (
     AIGenerateRequest,
     AIPrompt,
     GeneratedResponse,
     GenerateRequest,
 )
-from services.generate_service import GenerateService
+from backend.zenn.generate_service import GenerateService
 
 openai_aip_key: str = settings.OPENAI_API_KEY
 generator: GenerateService = GenerateService()
