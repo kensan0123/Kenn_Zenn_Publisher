@@ -59,3 +59,8 @@ class SuggestionResponse(BaseModel):
     suggestions: Suggestions
     related_links: List[RelatedLink]
     summary_report: str
+
+
+class WebSearchResponse(BaseModel):
+    search_result: str
+    related_links: List[RelatedLink]

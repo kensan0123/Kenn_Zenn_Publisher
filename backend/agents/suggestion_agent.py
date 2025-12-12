@@ -53,13 +53,13 @@ class SuggestAgent:
                                 "content": result,
                             }
                         )
-                messages.append({"role": "user", "content": tool_results})
+                messages.append({"role": "assistant", "content": tool_results})
 
             elif response.stop_reason == "end_turn":
                 final_text = ""
                 for block in response.content:
                     if block.type == "text":
-                        final_text += block.text
+                        final_text = block.text
 
                 suggestions: Suggestions = Suggestions.model_validate_json(final_text)
 
@@ -79,9 +79,12 @@ class SuggestAgent:
     def _system_prompt(self):
         _system_prompt: str = """
         ## 役割
-
         あなたは優秀な記事編集者兼記事編集アシスタントです。
         あなたはユーザーが書く記事を記事執筆の途中段階で評価し、最適なアドバイスをユーザーに提供します。
+
+        # ツール
+        記事アドバイスを生成するときに、あなたが最新のデータや有用な引用を提示したい場合、WebSearchツールを使うことができます。
+        ツールの呼び出し方法についてはtoolsに記載しているので決められたスキーマに従って呼びだしを行なってください。
 
         ## 入力情報
 
@@ -92,70 +95,100 @@ class SuggestAgent:
         - current_section_id : 現在執筆中の目次項目
         - current_content : 現在執筆中の目次項目の内容
 
-        ## 出力要件
+        ## 最終出力要件
 
         - JSONフォーマット
         - JSONのみ
 
-        ## 出力JSONスキーマ
+        ## 最終出力JSONスキーマ
 
         ```input_schema
         {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "suggestion_id": {
-                        "type": "string",
-                        "description": "order of suggestion",
-                    },
-                    "type": {
-                        "type": "Literal["structure", "content", "improvement"]",
-                        "description": "type of suggest",
-                    },
-                    "title": {
-                        "type": "string",
-                        "description": "title of suggestion",
-                    },
-                    "description": {
-                        "type": "string",
-                        "description": "description of suggestion",
-                    },
-                    "priority": {
-                        "type": "int",
-                        "description": "priority of suggestion",
+            "type": "object",
+            "properties": {
+                "suggestions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "suggestion_id": {
+                                "type": "string",
+                                "description": "order of suggestion",
+                            },
+                            "type": {
+                                "type": "Literal["structure", "content", "improvement"]",
+                                "description": "type of suggest",
+                            },
+                            "title": {
+                                "type": "string",
+                                "description": "title of suggestion",
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "description of suggestion",
+                            },
+                            "priority": {
+                                "type": "int",
+                                "description": "priority of suggestion",
+                            },
+                        },
+                        "required": ["suggestion_id", "type", "title", "description", "priority"]
                     },
                 },
-                "required": ["suggestion_id", "type", "title", "description", "priority"]
+                "summary_report": {
+                    "type": "str",
+                    "description": "summary of all suggestion."
+                }
             },
         }
 
         ```
 
-        ## 出力例
+        ## 最終出力例
 
         ```schema.json
-        [
-            {
-                "suggestion_id": "1",
-                "type": "structure",
-                "title": "例を書くことを推奨",
-                "description": "「Zenn CLIの使い方」に関する例を明示することを推奨します。
-                例えば、---ポートを指定してプレビュー画面を表示する方法---\n
-                    npx zenn preview --port 8000 のような例を書くことを推奨します。",
-                "priority": 2,
+        {
+            "suggestions": {
+                [
+                    {
+                        "suggestion_id": "1",
+                        "type": "structure",
+                        "title": "例を書くことを推奨",
+                        "description": "「Zenn CLIの使い方」に関する例を明示することを推奨します。
+                        例えば、---ポートを指定してプレビュー画面を表示する方法---\n
+                            npx zenn preview --port 8000 のような例を書くことを推奨します。",
+                        "priority": 2,
+                    },
+                    {
+                        "suggestion_id": "2",
+                        "type": "content",
+                        "title": "参考になりそうな情報",
+                        "description": "「Zenn CLIの使い方」に関す66る記事を書かれているようですが、
+                        追加情報として、Zenn CLI は GitHub 連携を行ることをこの章の記事内容に
+                        含むことを推奨します。
+                        参考になりそうな記事のリンクを掲載します。",
+                        "priority": 1,
+                    },
+                ]
             },
-            {
-                "suggestion_id": "2",
-                "type": "content",
-                "title": "参考になりそうな情報",
-                "description": "「Zenn CLIの使い方」に関す66る記事を書かれているようですが、
-                追加情報として、Zenn CLI は GitHub 連携を行ることをこの章の記事内容に含むことを
-                推奨します。参考になりそうな記事を載せます。",
-                "priority": 1,
+            "related_links": {
+                [
+                "https://zenn.dev/zenn/articles/install-zenn-cli",
+                "https://qiita.com/blackdesign/items/e061aee4eea4db0922f2",
+                "https://unikoukokun.jp/n/n7f02bd545127",
+                ]
+            },
+            "summary_report": {
+                "記事序盤の第1章から第3章までの構成は初めてZenn CLIを触る人にとって、1から導入
+                方法を述べられているため非常にわかりやすい構成となっています。一方で、応用編の第4章からについてはGitHubとの連携方法や
+                実装途中に入力が必要なコマンドの例を載せることでより良い文章になると思われます。掲載するリンク先のブログサイトを確認する
+                ことを推奨します。"
             }
-        ]
+        }
         ```
+
+        # 注意
+        最終出力とツール使用時の出力のスキーマが異なります。ツール使用時に誤って最終出力を出力しないように注意してください。
         """
         return _system_prompt
 
