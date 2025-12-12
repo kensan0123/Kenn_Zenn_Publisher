@@ -1,11 +1,9 @@
 from fastapi import APIRouter
-import uuid
-from datetime import datetime
 from backend.schemas.assistant_schemas import (
     WritingInfo,
-    WritingSession,
     SuggestionRequest,
     SuggestionResponse,
+    CreateSessionResponse,
 )
 from backend.services.suggest_service import SuggestSearvice
 from backend.session.session_manager import SessionManager
@@ -14,17 +12,21 @@ router = APIRouter(prefix="/assist", tags=["assist"])
 
 
 @router.post("/bigin")
-def create_session(writing_info: WritingInfo) -> WritingSession:
-    writing_session: WritingSession = WritingSession(
-        session_id=str(uuid.uuid4()),
-        topic=writing_info.topic,
-        target_audience=writing_info.target_audience,
-        outline=[],
-        content={},
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
+def create_session(writing_info: WritingInfo) -> CreateSessionResponse:
+    """
+    Create session
+
+    :param writing_info: info of the article
+    :type writing_info: WritingInfo
+    :rtype: session_id
+    """
+    session_manager: SessionManager = SessionManager()
+
+    session_response: CreateSessionResponse = session_manager.create_session(
+        writing_info=writing_info
     )
-    return writing_session
+
+    return session_response
 
 
 @router.post("/suggest")

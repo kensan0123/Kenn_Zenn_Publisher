@@ -3,6 +3,11 @@ from typing import Dict, Literal, List
 from datetime import datetime
 
 
+class CreateSessionResponse(BaseModel):
+    status: Literal["succsess", "fail"]
+    session_id: str | None
+
+
 class WritingInfo(BaseModel):
     topic: str
     target_audience: Literal["beginner", "intermediate", "advance"]

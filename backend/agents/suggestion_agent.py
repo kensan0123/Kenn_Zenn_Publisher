@@ -92,10 +92,10 @@ class SuggestAgent:
         tools: list[ToolUnionParam] = [
             {
                 "name": "web_search",
-                "discription": "Search the web for information",
+                "description": "Search the web for information",
                 "input_schema": {
                     "type": "object",
-                    "propaties": {
+                    "properties": {
                         "query": {
                             "type": "string",
                             "description": "Search query",
