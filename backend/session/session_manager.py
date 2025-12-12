@@ -25,7 +25,7 @@ class SessionManager:
             self._sessions[created_session.session_id] = created_session
 
             session_response: CreateSessionResponse = CreateSessionResponse(
-                status="succsess",
+                status="success",
                 session_id=created_session.session_id,
             )
 
@@ -38,5 +38,12 @@ class SessionManager:
 
     def get_session(self, session_id: str) -> WritingSession:
         """Return WritingSession by session_id"""
+        if session_id not in self._sessions:
+            raise SessionException(
+                message=f"Session {session_id} not found",
+                endpoint="/assist",
+            )
+
         writing_session: WritingSession = self._sessions[session_id]
+
         return writing_session

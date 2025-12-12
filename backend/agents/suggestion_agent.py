@@ -17,18 +17,20 @@ class SuggestAgent:
     def generate_suggestion(
         self, writing_session: WritingSession, current_section_id: str, current_content: str
     ) -> SuggestionResponse:
-        prompt = self._build_prompt(
+        _system_prompt = self._system_prompt()
+        _prompt = self._build_prompt(
             session=writing_session,
             current_session_id=current_section_id,
             current_content=current_content,
         )
         tools: list[ToolUnionParam] = self._build_tools()
-        messages: list[MessageParam] = [{"role": "user", "content": prompt}]
+        messages: list[MessageParam] = [{"role": "user", "content": _prompt}]
 
         while True:
             response = self._client.messages.create(
                 model="claude-sonnet-4-5",
                 max_tokens=1000,
+                system=_system_prompt,
                 tools=tools,
                 messages=messages,
             )
@@ -97,9 +99,10 @@ class SuggestAgent:
 
         ## 出力JSONスキーマ
 
-        ```inut_schema
+        ```input_schema
         {
-            "input_schema": {
+            "type": "array",
+            "items": {
                 "type": "object",
                 "properties": {
                     "suggestion_id": {
@@ -132,30 +135,29 @@ class SuggestAgent:
         ## 出力例
 
         ```schema.json
-        {
-            [
-                {
-                    "suggestion_id": "1",
-                    "type": "structure",
-                    "title": "例を書くことを推奨",
-                    "description": "「Zenn CLIの使い方」に関する例を明示することを推奨します。
-                    例えば、---ポートを指定してプレビュー画面を表示する方法---\n
-                     npx zenn preview --port 8000 のような例を書くことを推奨します。"
-                    "priority": 2,
-                },
-                {
-                    "suggestion_id": "2",
-                    "type": "content",
-                    "title": "参考になりそうな情報",
-                    "description": "「Zenn CLIの使い方」に関す66る記事を書かれているようですが、
-                    追加情報として、Zenn CLI は GitHub 連携を行ることをこの章の記事内容に含むことを
-                    推奨します。参考になりそうな記事を載せます。"
-                    "priority": 1,
-                }
-            ]
-        }
+        [
+            {
+                "suggestion_id": "1",
+                "type": "structure",
+                "title": "例を書くことを推奨",
+                "description": "「Zenn CLIの使い方」に関する例を明示することを推奨します。
+                例えば、---ポートを指定してプレビュー画面を表示する方法---\n
+                    npx zenn preview --port 8000 のような例を書くことを推奨します。",
+                "priority": 2,
+            },
+            {
+                "suggestion_id": "2",
+                "type": "content",
+                "title": "参考になりそうな情報",
+                "description": "「Zenn CLIの使い方」に関す66る記事を書かれているようですが、
+                追加情報として、Zenn CLI は GitHub 連携を行ることをこの章の記事内容に含むことを
+                推奨します。参考になりそうな記事を載せます。",
+                "priority": 1,
+            }
+        ]
         ```
         """
+        return _system_prompt
 
     def _build_prompt(
         self, session: WritingSession, current_session_id: str, current_content: str
@@ -164,7 +166,7 @@ class SuggestAgent:
 
         prompt: str = f"""
         - topic: {session.topic}
-        - tartet_audience: {session.target_audience}
+        - target_audience: {session.target_audience}
         - outline: {session.outline}
         - content: {session.content}
         - current_session_id: {current_session_id}

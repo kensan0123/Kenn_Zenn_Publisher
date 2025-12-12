@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class CreateSessionResponse(BaseModel):
-    status: Literal["succsess", "fail"]
+    status: Literal["success", "fail"]
     session_id: str | None
 
 
