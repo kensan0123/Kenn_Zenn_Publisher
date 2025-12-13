@@ -14,7 +14,7 @@ class WebSearchAgent:
     def search_web(self, query: str) -> WebSearchResponse:
         """web search agent"""
 
-        _system_prompt = ""
+        _system_prompt = self._system_prompt()
         _tools: List[ToolUnionParam] = [
             {"type": "web_search_20250305", "name": "web_search", "max_uses": 5}
         ]
@@ -139,3 +139,5 @@ class WebSearchAgent:
         に伝わると考えた場合は文章を削減して、レポートにすること。
         ```
         """
+
+        return _system_prompt

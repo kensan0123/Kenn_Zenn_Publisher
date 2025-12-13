@@ -3,7 +3,7 @@ from anthropic.types import MessageParam, ToolUnionParam
 from typing import Dict, Any, List
 from backend.schemas.assistant_schemas import (
     WritingSession,
-    Suggestions,
+    SuggestionAgentResponse,
     SuggestionResponse,
 )
 from backend.core.settings import settings
@@ -15,6 +15,7 @@ class SuggestAgent:
     def __init__(self):
         self._client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
         self._web_search_client: WebSearchAgent = WebSearchAgent()
+        self._related_links: List = []
 
     def generate_suggestion(
         self, writing_session: WritingSession, current_section_id: str, current_content: str
@@ -55,7 +56,7 @@ class SuggestAgent:
                                 "content": result,
                             }
                         )
-                messages.append({"role": "assistant", "content": tool_results})
+                messages.append({"role": "user", "content": tool_results})
 
             elif response.stop_reason == "end_turn":
                 final_text = ""
@@ -63,12 +64,14 @@ class SuggestAgent:
                     if block.type == "text":
                         final_text = block.text
 
-                suggestions: Suggestions = Suggestions.model_validate_json(final_text)
+                _agent_response: SuggestionAgentResponse = (
+                    SuggestionAgentResponse.model_validate_json(final_text)
+                )
 
                 suggestion_respons: SuggestionResponse = SuggestionResponse(
-                    suggestions=suggestions,
-                    related_links=[],
-                    summary_report="",
+                    suggestions=_agent_response.suggestions,
+                    related_links=self._related_links,
+                    summary_report=_agent_response.summary_report,
                 )
                 return suggestion_respons
 
@@ -217,7 +220,9 @@ class SuggestAgent:
                 query=tool_input["query"]
             )
 
-            return f"Search result for: {tool_input['query']} \n\n {_web_search_response}"
+            self._related_links = _web_search_response.related_links
+
+            return f"Search result for: {tool_input['query']}- {_web_search_response.search_result}"
         return "Unknown tool"
 
     def _build_tools(self) -> List[ToolUnionParam]:

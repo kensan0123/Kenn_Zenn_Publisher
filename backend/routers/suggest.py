@@ -31,9 +31,9 @@ def create_session(writing_info: WritingInfo) -> CreateSessionResponse:
 
 @router.post("/suggest")
 def writing_assist(suggest_request: SuggestionRequest) -> SuggestionResponse:
-    suggest_service: SuggestSearvice = SuggestSearvice()
+    _suggest_service: SuggestSearvice = SuggestSearvice()
 
-    response: SuggestionResponse = suggest_service.generate_suggestion(
+    response: SuggestionResponse = _suggest_service.generate_suggestion(
         suggest_request=suggest_request
     )
 

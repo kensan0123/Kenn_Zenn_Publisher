@@ -44,8 +44,9 @@ class Suggestion(BaseModel):
     priority: int
 
 
-class Suggestions(BaseModel):
+class SuggestionAgentResponse(BaseModel):
     suggestions: List[Suggestion]
+    summary_report: str
 
 
 class RelatedLink(BaseModel):
@@ -56,7 +57,7 @@ class RelatedLink(BaseModel):
 
 
 class SuggestionResponse(BaseModel):
-    suggestions: Suggestions
+    suggestions: List[Suggestion]
     related_links: List[RelatedLink]
     summary_report: str
 
