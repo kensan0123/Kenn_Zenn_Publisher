@@ -9,9 +9,9 @@ Base = declarative_base()
 
 class DataBase:
     def __init__(self) -> None:
-        self._user: str = settings.POSTGRESQL_USER
-        self._pass: str = settings.POSTGRESQL_PASSWORD
-        self._db: str = settings.POSTGRESQL_DB
+        self._user: str = settings.POSTGRES_USER
+        self._pass: str = settings.POSTGRES_PASSWORD
+        self._db: str = settings.POSTGRES_DB
         self._host: str = "postgres"
         self._port: int = 5432
 

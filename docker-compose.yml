@@ -41,7 +41,9 @@ services:
       - ROOT_DIR=/app
       - ARTICLE_DIR=/app/articles
       - ANTHROPIC_API_KEY_FILE=/run/secrets/anthropic_api_key
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-zenn_user}:${POSTGRES_PASSWORD:-zenn_password}@postgres:5432/${POSTGRES_DB:-zenn_db}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     working_dir: /app/backend
     depends_on:
       postgres:
