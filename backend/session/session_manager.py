@@ -57,9 +57,7 @@ class SessionManager:
 
         return fetched_session
 
-    def update_session(
-        self, writing_session: WritingSession, db: Session = Depends(get_db)
-    ) -> CreateSessionResponse:
+    def update_session(self, writing_session: WritingSession, db: Session) -> CreateSessionResponse:
         """Create session and return session_id"""
 
         _session_id = writing_session.session_id
@@ -80,6 +78,6 @@ class SessionManager:
 
     def already_registered_session_id(self, session_id: str) -> bool:
         if self._db:
-            return True
-        else:
             return False
+        else:
+            return True

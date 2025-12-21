@@ -13,8 +13,8 @@ from backend.core.database import get_db
 router = APIRouter(prefix="/assist", tags=["assist"])
 
 
-@router.post("/bigin")
-def create_session(
+@router.post("/begin")
+def begin_session(
     writing_info: WritingInfo, db: Session = Depends(get_db)
 ) -> CreateSessionResponse:
     session_manager: SessionManager = SessionManager(db=db)

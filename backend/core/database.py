@@ -1,10 +1,8 @@
+from typing import Generator
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.ext.declarative import declarative_base
 from backend.core.settings import settings
-from typing import Generator
-
-Base = declarative_base()
+from backend.models.session_model import Base
 
 
 class DataBase:

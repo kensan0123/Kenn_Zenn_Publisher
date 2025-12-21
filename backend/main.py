@@ -5,8 +5,7 @@ from backend.routers import suggest
 from backend.zenn import generate
 from backend.core.logger import logger
 from backend.zenn import publish
-from backend.models.session_model import WritingSessionModel
-from backend.core.database import database, get_db
+from backend.core.database import database
 
 
 @asynccontextmanager
