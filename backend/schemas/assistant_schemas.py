@@ -10,7 +10,7 @@ class CreateSessionResponse(BaseModel):
 
 class WritingInfo(BaseModel):
     topic: str
-    target_audience: Literal["beginner", "intermediate", "advance"]
+    target_audience: Literal["beginner", "intermediate", "advance"] | None = None
 
 
 class OutlineSection(BaseModel):
@@ -65,3 +65,8 @@ class SuggestionResponse(BaseModel):
 class WebSearchResponse(BaseModel):
     search_result: str
     related_links: List[RelatedLink]
+
+
+class CreateSession(BaseModel):
+    session_id: str
+    topic: str

@@ -1,4 +1,21 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: zenn-publisher-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   fastapi:
     build:
       context: .
@@ -24,7 +41,13 @@ services:
       - ROOT_DIR=/app
       - ARTICLE_DIR=/app/articles
       - ANTHROPIC_API_KEY_FILE=/run/secrets/anthropic_api_key
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     working_dir: /app/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 secrets:
   github_pat:
@@ -33,3 +56,7 @@ secrets:
     file: ./secrets/openai_api_key.txt
   anthropic_api_key:
     file: ./secrets/anthropic_api_key.txt
+
+volumes:
+  postgres_data:
+    driver: local

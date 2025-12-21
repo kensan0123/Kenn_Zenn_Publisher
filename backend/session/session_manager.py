@@ -1,32 +1,38 @@
+from fastapi import Depends
 from typing import Dict
 import uuid
 from datetime import datetime
-from backend.schemas.assistant_schemas import WritingSession, WritingInfo, CreateSessionResponse
+from sqlalchemy.orm import Session
+from backend.schemas.assistant_schemas import (
+    WritingSession,
+    WritingInfo,
+    CreateSessionResponse,
+    CreateSession,
+)
 from backend.exceptions.exceptions import SessionException
+from backend.core.database import get_db
+from backend.models.session_model import WritingSessionModel
 
 
 class SessionManager:
-    def __init__(self):
-        self._sessions: Dict[str, WritingSession] = {}
+    def __init__(self, db: Session):
+        self._db: Session = db
 
-    def create_session(self, writing_info: WritingInfo) -> CreateSessionResponse:
+    def create_session(self, topic: str) -> CreateSessionResponse:
         """Create session and return session_id"""
+
         _session_id = str(uuid.uuid4())
-        if _session_id not in self._sessions:
-            created_session: WritingSession = WritingSession(
+        if not self.already_registered_session_id(_session_id):
+            created_session_model: WritingSessionModel = WritingSessionModel(
                 session_id=_session_id,
-                topic=writing_info.topic,
-                target_audience=writing_info.target_audience,
-                outline=[],
-                content={},
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
+                topic=topic,
             )
-            self._sessions[created_session.session_id] = created_session
+
+            self._db.add(created_session_model)
 
             session_response: CreateSessionResponse = CreateSessionResponse(
                 status="success",
-                session_id=created_session.session_id,
+                session_id=_session_id,
             )
 
             return session_response
@@ -38,12 +44,40 @@ class SessionManager:
 
     def get_session(self, session_id: str) -> WritingSession:
         """Return WritingSession by session_id"""
-        if session_id not in self._sessions:
+        if self.already_registered_session_id(session_id=session_id):
+            fetched_session: WritingSession = self._db.get(
+                WritingSessionModel, {"session_id": session_id}
+            )
+
+        else:
             raise SessionException(
                 message=f"Session {session_id} not found",
                 endpoint="/assist",
             )
 
-        writing_session: WritingSession = self._sessions[session_id]
+        return fetched_session
 
-        return writing_session
+    def update_session(self, writing_session: WritingSession, db: Session) -> CreateSessionResponse:
+        """Create session and return session_id"""
+
+        _session_id = writing_session.session_id
+        if self.already_registered_session_id(session_id=_session_id):
+            _updated_session: WritingSession = writing_session
+
+            session_response: CreateSessionResponse = CreateSessionResponse(
+                status="success",
+                session_id=_updated_session.session_id,
+            )
+
+            return session_response
+
+        raise SessionException(
+            message="Session id is already exists.",
+            endpoint="/assist",
+        )
+
+    def already_registered_session_id(self, session_id: str) -> bool:
+        if self._db:
+            return False
+        else:
+            return True

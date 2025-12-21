@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 from backend.schemas.assistant_schemas import (
     WritingInfo,
     SuggestionRequest,
@@ -7,23 +8,19 @@ from backend.schemas.assistant_schemas import (
 )
 from backend.services.suggest_service import SuggestSearvice
 from backend.session.session_manager import SessionManager
+from backend.core.database import get_db
 
 router = APIRouter(prefix="/assist", tags=["assist"])
 
 
-@router.post("/bigin")
-def create_session(writing_info: WritingInfo) -> CreateSessionResponse:
-    """
-    Create session
-
-    :param writing_info: info of the article
-    :type writing_info: WritingInfo
-    :rtype: session_id
-    """
-    session_manager: SessionManager = SessionManager()
+@router.post("/begin")
+def begin_session(
+    writing_info: WritingInfo, db: Session = Depends(get_db)
+) -> CreateSessionResponse:
+    session_manager: SessionManager = SessionManager(db=db)
 
     session_response: CreateSessionResponse = session_manager.create_session(
-        writing_info=writing_info
+        topic=writing_info.topic
     )
 
     return session_response
