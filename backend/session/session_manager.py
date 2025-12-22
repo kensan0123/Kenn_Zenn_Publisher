@@ -22,7 +22,7 @@ class SessionManager:
         """Create session and return session_id"""
 
         _session_id = str(uuid.uuid4())
-        if not self.already_registered_session_id(_session_id):
+        if not self.check_db_by_session_id(_session_id):
             created_session_model: WritingSessionModel = WritingSessionModel(
                 session_id=_session_id,
                 topic=topic,
@@ -44,7 +44,7 @@ class SessionManager:
 
     def get_session(self, session_id: str) -> WritingSession:
         """Return WritingSession by session_id"""
-        if self.already_registered_session_id(session_id=session_id):
+        if self.check_db_by_session_id(session_id=session_id):
             fetched_session: WritingSession = self._db.get(
                 WritingSessionModel, {"session_id": session_id}
             )
@@ -61,7 +61,7 @@ class SessionManager:
         """Create session and return session_id"""
 
         _session_id = writing_session.session_id
-        if self.already_registered_session_id(session_id=_session_id):
+        if self.check_db_by_session_id(session_id=_session_id):
             _updated_session: WritingSession = writing_session
 
             session_response: CreateSessionResponse = CreateSessionResponse(
@@ -76,8 +76,16 @@ class SessionManager:
             endpoint="/assist",
         )
 
-    def already_registered_session_id(self, session_id: str) -> bool:
-        if self._db:
-            return False
+    # todo move to session service
+    def check_db_by_session_id(self, session_id: str) -> WritingSessionModel | None:
+        if not session_id:
+            raise SessionException(
+                message="Session ID is not found",
+                endpoint="/assist",
+            )
         else:
-            return True
+            result = self._db.get(WritingSessionModel, session_id)
+            if result:
+                return result
+            else:
+                return None
