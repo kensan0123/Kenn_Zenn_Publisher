@@ -63,7 +63,8 @@ class SuggestAgent:
                 for block in response.content:
                     if block.type == "text":
                         final_text = block.text
-
+                print(f"\n---final_text----\n{final_text}")
+                print(f"\n---type_final_text----\n{type(final_text)}")
                 _agent_response: SuggestionAgentResponse = (
                     SuggestionAgentResponse.model_validate_json(final_text)
                 )
@@ -186,7 +187,10 @@ class SuggestAgent:
         ```
 
         # 注意
-        最終出力とツール使用時の出力のスキーマが異なります。ツール使用時に誤って最終出力を出力しないように注意してください。
+        - 最終出力とツール使用時の出力のスキーマが異なります。ツール使用時に誤って最終出力を出力しな
+        いように注意してください。
+        - また、最終出力の際には```schema.json ``` で囲まれたJSON本体のみ出力してください。
+        - 注釈やコメントは一切入りません。
         """
         return _system_prompt
 

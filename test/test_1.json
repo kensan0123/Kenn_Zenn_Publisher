@@ -1,0 +1,32 @@
+{
+  "suggest_request": {
+    "session_id": "a3543343-d446-4e2c-ac7d-488d12b9f05c",
+    "current_section_id": "2",
+    "current_content": "> SQLAlchemyは、Pythonでは最もメジャーかつデファクトスタンダード的な存在であるSQL操作用ライブラリです。[引用元: SQLAlchemy 概要と基本の使い方](https://zenn.dev/myuki/books/02fe236c7bc377/viewer/27b8c3)みたいです（笑）。本当に最近学び出したところでこちら本もぜひ読んでみたいと思っています！また、こちらの[SQLAlchemyの基本的な使い方](https://qiita.com/arkuchy/items/75799665acd09520bed2)という記事がSQLAlchemyを使い出すときに大変参考になりました！！"
+  },
+  "writing_session": {
+    "session_id": "a3543343-d446-4e2c-ac7d-488d12b9f05c",
+    "topic": "test_12_24_11_23",
+    "target_audience": "beginner",
+    "outline": [
+      {
+        "section_id": "1",
+        "title": "導入",
+        "level": 1,
+        "order": 1
+      },
+      {
+        "section_id": "2",
+        "title": "SQLAlchemyとは",
+        "level": 1,
+        "order": 2
+      }
+    ],
+    "content": {
+      "1": "最近DBを学び始めています。というのも個人開発中のアプリケーション（Word版Cursorみたいなもの）でDBを使うことになったからです。",
+      "2": "> SQLAlchemyは、Pythonでは最もメジャーかつデファクトスタンダード的な存在であるSQL操作用ライブラリです。[引用元: SQLAlchemy 概要と基本の使い方](https://zenn.dev/myuki/books/02fe236c7bc377/viewer/27b8c3)みたいです（笑）。本当に最近学び出したところでこちら本もぜひ読んでみたいと思っています！また、こちらの[SQLAlchemyの基本的な使い方](https://qiita.com/arkuchy/items/75799665acd09520bed2)という記事がSQLAlchemyを使い出すときに大変参考になりました！！"
+    },
+    "created_at": "2025-12-24T02:26:09.453Z",
+    "updated_at": "2025-12-24T02:26:09.453Z"
+  }
+}

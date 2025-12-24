@@ -21,7 +21,7 @@ class WritingInfo(BaseModel):
 class OutlineSection(BaseModel):
     section_id: str
     title: str
-    level: int  # h1, h2, ...
+    level: int  # like h1, h2, ...
     order: int
 
 

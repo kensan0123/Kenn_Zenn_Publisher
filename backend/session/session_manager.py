@@ -1,16 +1,11 @@
-from fastapi import Depends
-from typing import Dict
 import uuid
 from datetime import datetime
 from sqlalchemy.orm import Session
 from backend.schemas.assistant_schemas import (
     WritingSession,
-    WritingInfo,
     CreateSessionResponse,
-    CreateSession,
 )
 from backend.exceptions.exceptions import SessionException
-from backend.core.database import get_db
 from backend.models.session_model import WritingSessionModel
 
 
@@ -69,21 +64,21 @@ class SessionManager:
         """Create session and return session_id"""
 
         _session_id = writing_session.session_id
+        writing_session_json = writing_session.model_dump()
+        print(writing_session_json["content"])
         fetched_model: WritingSessionModel = self.check_db_by_session_id(session_id=_session_id)
         if fetched_model:
-            _updated_session: WritingSession = WritingSession(
-                session_id=_session_id,
-                topic=writing_session.topic,
-                target_audience=writing_session.target_audience,
-                outline=writing_session.outline,
-                content=writing_session.content,
-                created_at=fetched_model.created_at,
-                updated_at=datetime.now(),
-            )
+            fetched_model.topic = writing_session_json["topic"]
+            fetched_model.target_audience = writing_session_json["target_audience"]
+            fetched_model.outline = writing_session_json["outline"]
+            fetched_model.content = writing_session_json["content"]
+            fetched_model.updated_at = datetime.now()
+
+            self._db.commit()
 
             session_response: CreateSessionResponse = CreateSessionResponse(
                 status="success",
-                session_id=_updated_session.session_id,
+                session_id=_session_id,
             )
 
             return session_response

@@ -42,3 +42,15 @@ def assist_writing(
     )
 
     return response
+
+
+@router.post("/update")
+def update_writing(
+    writing_session: WritingSession,
+    db: Session = Depends(get_db),
+):
+    _suggest_service: SuggestSearvice = SuggestSearvice(db=db)
+
+    response = _suggest_service.update_session(writing_session=writing_session)
+
+    return response

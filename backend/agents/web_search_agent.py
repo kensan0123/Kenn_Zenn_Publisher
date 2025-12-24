@@ -23,14 +23,14 @@ class WebSearchAgent:
 
         response = self._client.messages.create(
             model="claude-3-5-haiku-latest",
-            max_tokens=500,
+            max_tokens=1000,
             system=_system_prompt,
             tools=_tools,
             messages=_messages,
         )
 
         _search_report: str = ""
-
+        print(f"\n---------web_search_response---------\n{response}")
         if response.stop_reason == "end_turn":
             _related_links: List[RelatedLink] = []
             for block in response.content:
@@ -63,7 +63,8 @@ class WebSearchAgent:
 
         else:
             raise AgentException(
-                message="Web search agent error: end_turn not found",
+                message="Web search agent error: end_turn not found,"
+                f" this is the reason {response.stop_reason}",
                 endpoint="/assist",
             )
 

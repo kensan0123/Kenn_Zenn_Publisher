@@ -1,4 +1,5 @@
 from typing import Generator
+import json
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, Session
 from backend.core.settings import settings
@@ -21,6 +22,7 @@ class DataBase:
             self._database_url,
             echo=True,
             pool_pre_ping=True,
+            json_serializer=lambda obj: json.dumps(obj, ensure_ascii=False),
         )
 
         self._session_local = sessionmaker(
