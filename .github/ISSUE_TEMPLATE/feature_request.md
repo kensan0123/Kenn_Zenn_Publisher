@@ -1,3 +1,11 @@
+---
+name: 
+about: 
+title: "[] "
+labels: 
+assignees: ''
+---
+
 ## Problem
 
 `SessionException` and `AgentException` use private attributes (with underscores), which is inconsistent with other exception classes like `GenerateException`
