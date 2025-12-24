@@ -90,7 +90,7 @@ class SessionManager:
     def check_db_by_session_id(self, session_id: str) -> WritingSessionModel | None:
         if not session_id:
             raise SessionException(
-                message="Session is is not registerd",
+                message="Session ID not registerd",
                 endpoint="/assist",
             )
         else:
