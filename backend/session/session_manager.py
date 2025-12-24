@@ -74,8 +74,6 @@ class SessionManager:
             fetched_model.content = writing_session_json["content"]
             fetched_model.updated_at = datetime.now()
 
-            self._db.commit()
-
             session_response: CreateSessionResponse = CreateSessionResponse(
                 status="success",
                 session_id=_session_id,
@@ -84,7 +82,7 @@ class SessionManager:
             return session_response
 
         raise SessionException(
-            message="Session id is already exists.",
+            message="Session not found",
             endpoint="/assist",
         )
 
@@ -92,7 +90,7 @@ class SessionManager:
     def check_db_by_session_id(self, session_id: str) -> WritingSessionModel | None:
         if not session_id:
             raise SessionException(
-                message="Session ID is not found",
+                message="Session ID not registerd",
                 endpoint="/assist",
             )
         else:
