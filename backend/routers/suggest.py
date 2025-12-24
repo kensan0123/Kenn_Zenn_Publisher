@@ -5,6 +5,7 @@ from backend.schemas.assistant_schemas import (
     SuggestionRequest,
     SuggestionResponse,
     CreateSessionResponse,
+    WritingSession,
 )
 from backend.services.suggest_service import SuggestSearvice
 from backend.session.session_manager import SessionManager
@@ -15,7 +16,8 @@ router = APIRouter(prefix="/assist", tags=["assist"])
 
 @router.post("/begin")
 def begin_session(
-    writing_info: WritingInfo, db: Session = Depends(get_db)
+    writing_info: WritingInfo,
+    db: Session = Depends(get_db),
 ) -> CreateSessionResponse:
     session_manager: SessionManager = SessionManager(db=db)
 
@@ -27,11 +29,28 @@ def begin_session(
 
 
 @router.post("/suggest")
-def writing_assist(suggest_request: SuggestionRequest) -> SuggestionResponse:
-    _suggest_service: SuggestSearvice = SuggestSearvice()
+def assist_writing(
+    suggest_request: SuggestionRequest,
+    writing_session: WritingSession,
+    db: Session = Depends(get_db),
+) -> SuggestionResponse:
+    _suggest_service: SuggestSearvice = SuggestSearvice(db=db)
 
     response: SuggestionResponse = _suggest_service.generate_suggestion(
-        suggest_request=suggest_request
+        suggest_request=suggest_request,
+        writing_session=writing_session,
     )
+
+    return response
+
+
+@router.post("/update")
+def update_writing(
+    writing_session: WritingSession,
+    db: Session = Depends(get_db),
+):
+    _suggest_service: SuggestSearvice = SuggestSearvice(db=db)
+
+    response = _suggest_service.update_session(writing_session=writing_session)
 
     return response

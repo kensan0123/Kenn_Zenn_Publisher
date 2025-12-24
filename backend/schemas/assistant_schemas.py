@@ -8,6 +8,11 @@ class CreateSessionResponse(BaseModel):
     session_id: str | None
 
 
+class UpdatedSessionResponse(BaseModel):
+    status: Literal["success", "fail"]
+    session_id: str | None
+
+
 class WritingInfo(BaseModel):
     topic: str
     target_audience: Literal["beginner", "intermediate", "advance"] | None = None
@@ -16,7 +21,7 @@ class WritingInfo(BaseModel):
 class OutlineSection(BaseModel):
     section_id: str
     title: str
-    level: int  # h1, h2, ...
+    level: int  # like h1, h2, ...
     order: int
 
 
