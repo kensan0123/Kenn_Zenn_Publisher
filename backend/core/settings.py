@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     def validate_anthropic_key(cls, v):
         """ANTHROPIC_API_KEYが必須であることを検証"""
         if not v or not v.startswith("sk-"):
-            raise ValueError("Valid ANTHROPIC_API_KEY is requierd")
+            raise ValueError("Valid ANTHROPIC_API_KEY is required")
         return v
 
 
