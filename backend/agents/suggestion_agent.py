@@ -7,6 +7,7 @@ from backend.schemas.assistant_schemas import (
     SuggestionResponse,
 )
 from backend.core.settings import settings
+from backend.core.logger import logger
 from backend.exceptions.exceptions import AgentException
 from backend.agents.web_search_agent import WebSearchAgent, WebSearchResponse
 
@@ -63,11 +64,12 @@ class SuggestAgent:
                 for block in response.content:
                     if block.type == "text":
                         final_text = block.text
-                print(f"\n---final_text----\n{final_text}")
-                print(f"\n---type_final_text----\n{type(final_text)}")
+
                 _agent_response: SuggestionAgentResponse = (
                     SuggestionAgentResponse.model_validate_json(final_text)
                 )
+
+                logger.info("agent suggestion complaeted")
 
                 suggestion_respons: SuggestionResponse = SuggestionResponse(
                     suggestions=_agent_response.suggestions,
@@ -77,6 +79,8 @@ class SuggestAgent:
                 return suggestion_respons
 
             else:
+                logger.info
+
                 raise AgentException(
                     message="Agent call error",
                     endpoint="/assist",
