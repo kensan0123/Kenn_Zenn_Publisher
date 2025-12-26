@@ -19,8 +19,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Zenn Publisher API",
-    description="API for generating and publishing Zenn articles",
+    title="FreeBird API",
+    description="This is FreeBird App.",
     version="1.0.0",
     lifespan=lifespan,
 )
