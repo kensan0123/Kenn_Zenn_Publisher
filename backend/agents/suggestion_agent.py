@@ -7,8 +7,11 @@ from backend.schemas.assistant_schemas import (
     SuggestionResponse,
 )
 from backend.core.settings import settings
+from backend.core.logger import get_logger
 from backend.exceptions.exceptions import AgentException
 from backend.agents.web_search_agent import WebSearchAgent, WebSearchResponse
+
+logger = get_logger(__name__)
 
 
 class SuggestAgent:
@@ -20,35 +23,41 @@ class SuggestAgent:
     def generate_suggestion(
         self, writing_session: WritingSession, current_section_id: str, current_content: str
     ) -> SuggestionResponse:
-        _system_prompt = self._system_prompt()
-        _prompt = self._build_prompt(
+        system_prompt = self._system_prompt()
+        prompt = self._build_prompt(
             session=writing_session,
             current_session_id=current_section_id,
             current_content=current_content,
         )
         tools: list[ToolUnionParam] = self._build_tools()
-        messages: list[MessageParam] = [{"role": "user", "content": _prompt}]
+        messages: list[MessageParam] = [{"role": "user", "content": prompt}]
 
         while True:
+            logger.info("Called suggest agent")
             response = self._client.messages.create(
                 model="claude-3-5-haiku-latest",
                 max_tokens=1000,
-                system=_system_prompt,
+                system=system_prompt,
                 tools=tools,
                 messages=messages,
             )
 
             if response.stop_reason == "tool_use":
+                logger.info("Suggest agent calls tool")
                 messages.append({"role": "assistant", "content": response.content})
                 tool_results = []
+                tool_count = 0
                 for block in response.content:
                     if block.type == "tool_use":
                         tool_name = block.name
                         tool_input = block.input
                         tool_id = block.id
 
+                        tool_count += 1
+                        logger.info("Executing tool: count=%s", tool_count)
                         result = self._execute_tool(tool_name, tool_input)
 
+                        logger.info("Appending tool result")
                         tool_results.append(
                             {
                                 "type": "tool_result",
@@ -57,17 +66,21 @@ class SuggestAgent:
                             }
                         )
                 messages.append({"role": "user", "content": tool_results})
+                logger.info("Return results to suggest agent")
+                logger.debug(tool_results)
 
             elif response.stop_reason == "end_turn":
+                logger.info("Finish generating suggestion")
                 final_text = ""
                 for block in response.content:
                     if block.type == "text":
                         final_text = block.text
-                print(f"\n---final_text----\n{final_text}")
-                print(f"\n---type_final_text----\n{type(final_text)}")
+
                 _agent_response: SuggestionAgentResponse = (
                     SuggestionAgentResponse.model_validate_json(final_text)
                 )
+
+                logger.info("Conpleted suggestion")
 
                 suggestion_respons: SuggestionResponse = SuggestionResponse(
                     suggestions=_agent_response.suggestions,
@@ -78,7 +91,7 @@ class SuggestAgent:
 
             else:
                 raise AgentException(
-                    message="Agent call error",
+                    message="Unexpected stop reason agent stoped",
                     endpoint="/assist",
                 )
 

@@ -8,28 +8,31 @@
 
 ## 📊 プロジェクト概要
 
-Zenn記事の生成と公開を自動化するFastAPIサービス。PostgreSQLデータベースと連携し、Anthropic Claude/OpenAI APIを使った執筆支援機能を実装。
+Zenn 記事の生成と公開を自動化する FastAPI サービス。PostgreSQL データベースと連携し、Anthropic Claude/OpenAI API を使った執筆支援機能を実装。
 
 ---
 
 ## ✅ **良い点**
 
 ### 1. **コード品質管理**
-- ✨ Ruffによるリンター・フォーマッターが導入済み
-- ✨ pre-commitフックで自動チェック
-- ✨ GitHub Actionsでのruff CI
+
+- ✨ Ruff によるリンター・フォーマッターが導入済み
+- ✨ pre-commit フックで自動チェック
+- ✨ GitHub Actions での ruff CI
 - ✨ すべてのリントチェックがパス
 
 ### 2. **アーキテクチャ設計**
+
 - ✨ レイヤー分離が適切（routers → services → agents）
-- ✨ Pydanticスキーマによる型安全性
-- ✨ SQLAlchemyでのDB抽象化
-- ✨ Docker Composeでの環境構築
+- ✨ Pydantic スキーマによる型安全性
+- ✨ SQLAlchemy での DB 抽象化
+- ✨ Docker Compose での環境構築
 
 ### 3. **セキュリティ**
-- ✨ Docker Secretsによる機密情報管理
+
+- ✨ Docker Secrets による機密情報管理
 - ✨ `.gitignore`で秘匿ファイルを適切に除外
-- ✨ API keyのファイルベース管理
+- ✨ API key のファイルベース管理
 
 ---
 
@@ -38,6 +41,7 @@ Zenn記事の生成と公開を自動化するFastAPIサービス。PostgreSQL�
 ### 🔴 **重大な問題（優先度：高）**
 
 #### 1. **例外処理の不一致**
+
 **ファイル**: `backend/exceptions/exceptions.py:1-49`
 
 **問題点：**
@@ -56,8 +60,9 @@ self._status_code: int | None = status_code
 ```
 
 **なぜ問題か：**
-- 例外をキャッチした後、`.message`でアクセスするとAttributeErrorが発生する可能性
-- FastAPIのエラーハンドラで統一的に処理できない
+
+- 例外をキャッチした後、`.message`でアクセスすると AttributeError が発生する可能性
+- FastAPI のエラーハンドラで統一的に処理できない
 - コードの保守性・可読性が低下
 
 **修正方法：**
@@ -75,9 +80,11 @@ class SessionException(Exception):
 ---
 
 #### 2. **データベース操作のトランザクション管理の問題**
+
 **ファイル**: `backend/session/session_manager.py:63-89`
 
 **問題点：**
+
 ```python
 def update_session(self, writing_session: WritingSession) -> CreateSessionResponse:
     # ...
@@ -91,6 +98,7 @@ def update_session(self, writing_session: WritingSession) -> CreateSessionRespon
 ```
 
 **なぜ問題か：**
+
 - `get_db()`依存性注入でセッション管理をしているのに、手動で`commit()`を呼ぶと二重管理になる
 - `database.py:42-43`でジェネレーターが自動的に`commit()`するため、エラー時のロールバックが不完全になる可能性
 
@@ -113,6 +121,7 @@ def update_session(self, writing_session: WritingSession) -> CreateSessionRespon
 ---
 
 #### 3. **エラーメッセージのタイポ**
+
 **ファイル**: `backend/core/settings.py:51`
 
 ```python
@@ -120,6 +129,7 @@ raise ValueError("Valid ANTHROPIC_API_KEY is requierd")  # ← "requierd"
 ```
 
 **修正：**
+
 ```python
 raise ValueError("Valid ANTHROPIC_API_KEY is required")  # ← "required"
 ```
@@ -128,13 +138,16 @@ raise ValueError("Valid ANTHROPIC_API_KEY is required")  # ← "required"
 
 ### 🟡 **中程度の問題（優先度：中）**
 
-#### 4. **デバッグprint文の残存**
+#### 4. **デバッグ print 文の残存**
+
 **ファイル**:
+
 - `backend/agents/suggestion_agent.py:66-67`
 - `backend/agents/web_search_agent.py:33`
 - `backend/session/session_manager.py:68`
 
 **問題点：**
+
 ```python
 print(f"\n---final_text----\n{final_text}")
 print(f"\n---type_final_text----\n{type(final_text)}")
@@ -143,11 +156,13 @@ print(writing_session_json["content"])
 ```
 
 **なぜ問題か：**
+
 - 本番環境でのログが混乱する
 - すでに`logger`が存在するのに使われていない
-- Dockerログが無駄に肥大化
+- Docker ログが無駄に肥大化
 
 **修正方法：**
+
 ```python
 from backend.core.logger import logger
 
@@ -158,17 +173,20 @@ logger.debug(f"Final text type: {type(final_text)}")
 ---
 
 #### 5. **命名の不一致**
+
 **ファイル**: `backend/services/suggest_service.py:14`
 
 ```python
-class SuggestSearvice:  # ← タイポ："Service"ではなく"Searvice"
+class SuggestService:  # ← タイポ："Service"ではなく"Searvice"
 ```
 
 **なぜ問題か：**
+
 - タイポは可読性を下げる
 - 他の開発者が混乱する
 
 **修正：**
+
 ```python
 class SuggestService:  # ← 正しいスペル
 ```
@@ -177,10 +195,12 @@ class SuggestService:  # ← 正しいスペル
 
 ---
 
-#### 6. **Model → Schema変換の冗長性**
+#### 6. **Model → Schema 変換の冗長性**
+
 **ファイル**: `backend/session/session_manager.py:46-54`
 
 **問題点：**
+
 ```python
 # review: is there a more simple code... (dump into session obj)
 fetched_session: WritingSession = WritingSession(
@@ -195,7 +215,7 @@ fetched_session: WritingSession = WritingSession(
 ```
 
 **改善案：**
-Pydantic V2の`model_validate()`や`from_orm()`を使うと簡潔になります。
+Pydantic V2 の`model_validate()`や`from_orm()`を使うと簡潔になります。
 
 ```python
 # WritingSessionModelに__dict__または.model_dump()があれば
@@ -204,7 +224,7 @@ fetched_session = WritingSession.model_validate(
 )
 ```
 
-または、SQLAlchemyモデルに`to_pydantic()`メソッドを追加：
+または、SQLAlchemy モデルに`to_pydantic()`メソッドを追加：
 
 ```python
 # WritingSessionModel内
@@ -214,10 +234,12 @@ def to_pydantic(self) -> WritingSession:
 
 ---
 
-#### 7. **UUIDバリデーションの欠如**
+#### 7. **UUID バリデーションの欠如**
+
 **ファイル**: `backend/session/session_manager.py:92-103`
 
 **問題点：**
+
 ```python
 def check_db_by_session_id(self, session_id: str) -> WritingSessionModel | None:
     if not session_id:
@@ -225,7 +247,7 @@ def check_db_by_session_id(self, session_id: str) -> WritingSessionModel | None:
 ```
 
 **改善案：**
-UUID形式のバリデーションを追加すべきです。
+UUID 形式のバリデーションを追加すべきです。
 
 ```python
 import uuid
@@ -249,18 +271,21 @@ def check_db_by_session_id(self, session_id: str) -> WritingSessionModel | None:
 
 ---
 
-#### 8. **非推奨のOpenAI API使用**
+#### 8. **非推奨の OpenAI API 使用**
+
 **ファイル**: `backend/zenn/generate.py:45`
 
 **問題点：**
+
 ```python
 response = client.responses.create(model="gpt-5-nano", input=_prompt)
 ```
 
-- `responses.create`というAPIは存在しません（おそらく`chat.completions.create`の誤り）
+- `responses.create`という API は存在しません（おそらく`chat.completions.create`の誤り）
 - `gpt-5-nano`というモデルも存在しません
 
 **修正案：**
+
 ```python
 response = client.chat.completions.create(
     model="gpt-4o-mini",  # または他の有効なモデル
@@ -272,19 +297,22 @@ response_content = response.choices[0].message.content
 
 ---
 
-#### 9. **SQLAlchemyのdeprecated機能使用**
+#### 9. **SQLAlchemy の deprecated 機能使用**
+
 **ファイル**: `backend/models/session_model.py:5`
 
 **問題点：**
+
 ```python
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 ```
 
-SQLAlchemy 2.0では`DeclarativeBase`の使用が推奨されています。
+SQLAlchemy 2.0 では`DeclarativeBase`の使用が推奨されています。
 
 **修正案：**
+
 ```python
 from sqlalchemy.orm import DeclarativeBase
 
@@ -296,7 +324,7 @@ class Base(DeclarativeBase):
 
 ### 🟢 **軽微な改善提案（優先度：低）**
 
-#### 10. **コメントとTODOの整理**
+#### 10. **コメントと TODO の整理**
 
 プロジェクト内に以下のようなコメントが散見されます：
 
@@ -310,11 +338,12 @@ class Base(DeclarativeBase):
 ```
 
 **提案：**
-これらを**GitHub Issuesとして管理**することをお勧めします。コード内のコメントはすぐに陳腐化し、追跡が困難です。
+これらを**GitHub Issues として管理**することをお勧めします。コード内のコメントはすぐに陳腐化し、追跡が困難です。
 
 ---
 
 #### 11. **型ヒントの改善**
+
 **ファイル**: `backend/core/database.py:38-48`
 
 ```python
@@ -332,10 +361,12 @@ def get_session(self) -> Generator[Session, None, None]:
 ```
 
 **問題：**
+
 - `commit()`でエラーが発生した場合、ロールバックされない
 - 汎用的な`Exception`キャッチは避けるべき
 
 **改善案：**
+
 ```python
 def get_session(self) -> Generator[Session, None, None]:
     """sessionを取得"""
@@ -353,7 +384,8 @@ def get_session(self) -> Generator[Session, None, None]:
 
 ---
 
-#### 12. **APIエンドポイントの命名規則**
+#### 12. **API エンドポイントの命名規則**
+
 **ファイル**: `backend/routers/suggest.py:14`
 
 ```python
@@ -364,12 +396,14 @@ router = APIRouter(prefix="/assist", tags=["assist"])
 
 **提案：**
 統一感を持たせるため、以下のいずれかに統一：
+
 - `/suggest`エンドポイント + `SuggestService`
 - `/assist`エンドポイント + `AssistService`
 
 ---
 
 #### 13. **マジックナンバーの定数化**
+
 **ファイル**: `backend/agents/suggestion_agent.py:35`
 
 ```python
@@ -377,6 +411,7 @@ max_tokens=1000,
 ```
 
 **提案：**
+
 ```python
 MAX_TOKENS_SUGGESTION = 1000
 
@@ -389,7 +424,8 @@ response = self._client.messages.create(
 
 ---
 
-#### 14. **FastAPIのLifespanでのエラーハンドリング**
+#### 14. **FastAPI の Lifespan でのエラーハンドリング**
+
 **ファイル**: `backend/main.py:12-16`
 
 ```python
@@ -423,49 +459,54 @@ async def lifespan(app: FastAPI):
 
 ## 📈 **コードメトリクス**
 
-| 項目 | 状態 |
-|------|------|
-| **Linter** | ✅ Pass (Ruff) |
-| **Type hints** | 🟡 部分的に使用 |
-| **Test coverage** | ❌ テストコードなし |
-| **Documentation** | ✅ README充実 |
-| **Security** | ✅ Docker Secrets使用 |
-| **Git hygiene** | ✅ `.gitignore`適切 |
+| 項目              | 状態                   |
+| ----------------- | ---------------------- |
+| **Linter**        | ✅ Pass (Ruff)         |
+| **Type hints**    | 🟡 部分的に使用        |
+| **Test coverage** | ❌ テストコードなし    |
+| **Documentation** | ✅ README 充実         |
+| **Security**      | ✅ Docker Secrets 使用 |
+| **Git hygiene**   | ✅ `.gitignore`適切    |
 
 ---
 
 ## 🎯 **優先度別アクションアイテム**
 
 ### 🔴 すぐに修正すべき（高優先度）
+
 1. ✏️ 例外クラスの属性名を統一 (`backend/exceptions/exceptions.py`)
-2. ✏️ `update_session()`の手動commit削除 (`backend/session/session_manager.py:77`)
+2. ✏️ `update_session()`の手動 commit 削除 (`backend/session/session_manager.py:77`)
 3. ✏️ タイポ修正："requierd" → "required" (`backend/core/settings.py:51`)
-4. ✏️ OpenAI API呼び出しを修正 (`backend/zenn/generate.py:45`)
+4. ✏️ OpenAI API 呼び出しを修正 (`backend/zenn/generate.py:45`)
 
 ### 🟡 計画的に改善（中優先度）
-5. 🧹 デバッグprint文の削除・logger化
-6. 📝 `SuggestSearvice` → `SuggestService`にリネーム
-7. 🔄 SQLAlchemy 2.0の`DeclarativeBase`に移行
-8. ✅ UUIDバリデーション追加
+
+5. 🧹 デバッグ print 文の削除・logger 化
+6. 📝 `SuggestService` → `SuggestService`にリネーム
+7. 🔄 SQLAlchemy 2.0 の`DeclarativeBase`に移行
+8. ✅ UUID バリデーション追加
 
 ### 🟢 余裕があれば（低優先度）
-9. 📋 コード内TODOをGitHub Issuesに移行
+
+9. 📋 コード内 TODO を GitHub Issues に移行
 10. 🧪 テストコードの追加
-11. 📖 API設計ドキュメントの作成
-12. 🔒 FastAPIのエラーハンドラー追加（カスタム例外用）
+11. 📖 API 設計ドキュメントの作成
+12. 🔒 FastAPI のエラーハンドラー追加（カスタム例外用）
 
 ---
 
 ## 💡 **総合評価**
 
 ### ✨ **強み**
+
 - 明確なアーキテクチャ設計
 - 適切なセキュリティ対策（Docker Secrets）
 - コード品質ツール（Ruff, pre-commit）の導入
 
 ### ⚠️ **課題**
+
 - テストコードが存在しない
-- 一部のコードにタイポや非推奨APIの使用
+- 一部のコードにタイポや非推奨 API の使用
 - エラーハンドリングの改善余地
 
 ### 🎓 **学習ポイント**
@@ -473,8 +514,8 @@ async def lifespan(app: FastAPI):
 今回のレビューで見つかった問題のうち、特に**なぜ問題なのか**を理解することが重要です：
 
 1. **例外処理の統一性**：なぜ属性名を統一すべきか？ → **予測可能性と保守性**
-2. **トランザクション管理**：なぜ手動commitが問題か？ → **責任の明確化とバグ防止**
-3. **print文 vs logger**：なぜloggerを使うべきか？ → **ログレベル制御と本番環境での運用性**
+2. **トランザクション管理**：なぜ手動 commit が問題か？ → **責任の明確化とバグ防止**
+3. **print 文 vs logger**：なぜ logger を使うべきか？ → **ログレベル制御と本番環境での運用性**
 
 これらの原則を理解すれば、今後自分でコードを書く際に同じミスを避けられます。
 

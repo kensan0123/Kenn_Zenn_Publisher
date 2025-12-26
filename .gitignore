@@ -41,3 +41,6 @@ yarn-error.log*
 # Zenn articles and books
 articles/*
 books/*
+
+# Test section
+output/

@@ -7,6 +7,9 @@ from backend.schemas.assistant_schemas import (
 )
 from backend.exceptions.exceptions import SessionException
 from backend.models.session_model import WritingSessionModel
+from backend.core.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class SessionManager:
@@ -30,6 +33,7 @@ class SessionManager:
                 session_id=_session_id,
             )
 
+            logger.info("Created session from db")
             return session_response
 
         raise SessionException(
@@ -52,6 +56,8 @@ class SessionManager:
                 created_at=fetched_model.created_at,
                 updated_at=fetched_model.updated_at,
             )
+
+            logger.info("Got session from db")
             return fetched_session
 
         else:
@@ -65,7 +71,7 @@ class SessionManager:
 
         _session_id = writing_session.session_id
         writing_session_json = writing_session.model_dump()
-        print(writing_session_json["content"])
+
         fetched_model: WritingSessionModel = self.check_db_by_session_id(session_id=_session_id)
         if fetched_model:
             fetched_model.topic = writing_session_json["topic"]
@@ -79,6 +85,7 @@ class SessionManager:
                 session_id=_session_id,
             )
 
+            logger.info("Updated session form db")
             return session_response
 
         raise SessionException(
@@ -89,13 +96,16 @@ class SessionManager:
     # todo move to session service
     def check_db_by_session_id(self, session_id: str) -> WritingSessionModel | None:
         if not session_id:
+            logger.error("No section id")
             raise SessionException(
-                message="Session ID not registerd",
+                message="Rquire session_id",
                 endpoint="/assist",
             )
         else:
             result = self._db.get(WritingSessionModel, session_id)
             if result:
+                logger.info("Registerd session found")
                 return result
             else:
+                logger.info("This session_id is not used")
                 return None

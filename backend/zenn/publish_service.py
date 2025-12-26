@@ -1,8 +1,10 @@
-from core.logger import logger
+from backend.core.logger import get_logger
 from backend.exceptions.exceptions import PublishException
 from requests.exceptions import Timeout
 from backend.zenn.zenn_article_schemas import PublishRequest, PublishResponse
 from backend.zenn.zenn_service import ZennService
+
+logger = get_logger(__name__)
 
 
 class PublishService:

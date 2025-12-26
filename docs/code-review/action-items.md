@@ -10,69 +10,77 @@
 ### 🔴 高優先度（すぐに修正すべき）
 
 - [ ] **#1: 例外クラスの属性名を統一**
+
   - **ファイル**: `backend/exceptions/exceptions.py`
   - **対象**: `SessionException`, `AgentException`
-  - **作業内容**: private属性（`_message`, `_endpoint`, `_status_code`）をpublic属性に変更
+  - **作業内容**: private 属性（`_message`, `_endpoint`, `_status_code`）を public 属性に変更
   - **影響範囲**: 例外をキャッチしている全箇所
-  - **見積**: 15分
+  - **見積**: 15 分
 
-- [ ] **#2: `update_session()`の手動commit削除**
+- [ ] **#2: `update_session()`の手動 commit 削除**
+
   - **ファイル**: `backend/session/session_manager.py:77`
   - **作業内容**: `self._db.commit()`を削除
-  - **理由**: 依存性注入側で自動的にcommitされるため
-  - **見積**: 5分
+  - **理由**: 依存性注入側で自動的に commit されるため
+  - **見積**: 5 分
 
 - [ ] **#3: タイポ修正："requierd" → "required"**
+
   - **ファイル**: `backend/core/settings.py:51`
   - **作業内容**: エラーメッセージのスペル修正
-  - **見積**: 1分
+  - **見積**: 1 分
 
-- [ ] **#4: OpenAI API呼び出しを修正**
+- [ ] **#4: OpenAI API 呼び出しを修正**
   - **ファイル**: `backend/zenn/generate.py:45`
   - **作業内容**:
     - `client.responses.create` → `client.chat.completions.create`
     - `model="gpt-5-nano"` → 有効なモデル名に変更
-  - **見積**: 10分
+  - **見積**: 10 分
 
 ---
 
 ### 🟡 中優先度（計画的に改善）
 
-- [ ] **#5: デバッグprint文の削除・logger化**
+- [ ] **#5: デバッグ print 文の削除・logger 化**
+
   - **ファイル**:
     - `backend/agents/suggestion_agent.py:66-67`
     - `backend/agents/web_search_agent.py:33`
     - `backend/session/session_manager.py:68`
   - **作業内容**: `print()`を`logger.debug()`に置き換え
-  - **見積**: 20分
+  - **見積**: 20 分
 
-- [ ] **#6: `SuggestSearvice` → `SuggestService`にリネーム**
+- [ ] **#6: `SuggestService` → `SuggestService`にリネーム**
+
   - **ファイル**:
     - `backend/services/suggest_service.py:14`
     - `backend/routers/suggest.py` (インポート箇所)
   - **作業内容**: クラス名のタイポ修正
-  - **見積**: 10分
+  - **見積**: 10 分
 
-- [ ] **#7: SQLAlchemy 2.0の`DeclarativeBase`に移行**
+- [ ] **#7: SQLAlchemy 2.0 の`DeclarativeBase`に移行**
+
   - **ファイル**: `backend/models/session_model.py:5-7`
   - **作業内容**: `declarative_base()` → `DeclarativeBase`
-  - **見積**: 15分
+  - **見積**: 15 分
 
-- [ ] **#8: UUIDバリデーション追加**
+- [ ] **#8: UUID バリデーション追加**
+
   - **ファイル**: `backend/session/session_manager.py:92-103`
-  - **作業内容**: `check_db_by_session_id()`にUUID形式チェックを追加
-  - **見積**: 15分
+  - **作業内容**: `check_db_by_session_id()`に UUID 形式チェックを追加
+  - **見積**: 15 分
 
-- [ ] **#9: Model → Schema変換の簡潔化**
+- [ ] **#9: Model → Schema 変換の簡潔化**
   - **ファイル**: `backend/session/session_manager.py:46-54`
   - **作業内容**: `WritingSession(...)`を`WritingSession.model_validate()`に変更
-  - **見積**: 20分
+  - **見積**: 20 分
 
 ---
 
 ### 🟢 低優先度（余裕があれば）
 
-- [ ] **#10: コード内TODOをGitHub Issuesに移行**
+- [ ] **#10: コード内 TODO を GitHub Issues に移行**
+
   - **対象箇所**:
     - `session_manager.py:19` - "session id should created by pre layer"
     - `session_manager.py:45` - "is there a more simple code"
@@ -80,73 +88,83 @@
     - `suggest_service.py:41` - "is this right to save session"
     - `session_manager.py:91` - "move to session service"
     - `session_model.py:17` - "invert to server_default"
-  - **作業内容**: GitHub Issuesとして登録し、コード内コメントを削除
-  - **見積**: 30分
+  - **作業内容**: GitHub Issues として登録し、コード内コメントを削除
+  - **見積**: 30 分
 
 - [ ] **#11: データベーストランザクション改善**
+
   - **ファイル**: `backend/core/database.py:38-48`
   - **作業内容**: `try-except-else-finally`パターンに変更
-  - **見積**: 15分
+  - **見積**: 15 分
 
-- [ ] **#12: APIエンドポイント命名の統一**
+- [ ] **#12: API エンドポイント命名の統一**
+
   - **ファイル**: `backend/routers/suggest.py:14`
   - **作業内容**: `/assist` → `/suggest`に変更（または逆）
-  - **影響範囲**: フロントエンド、APIドキュメント
-  - **見積**: 20分
+  - **影響範囲**: フロントエンド、API ドキュメント
+  - **見積**: 20 分
 
 - [ ] **#13: マジックナンバーの定数化**
+
   - **ファイル**: `backend/agents/suggestion_agent.py:35`
   - **作業内容**: `max_tokens=1000`を定数`MAX_TOKENS_SUGGESTION`として定義
-  - **見積**: 10分
+  - **見積**: 10 分
 
-- [ ] **#14: FastAPI Lifespanのエラーハンドリング追加**
+- [ ] **#14: FastAPI Lifespan のエラーハンドリング追加**
+
   - **ファイル**: `backend/main.py:12-16`
-  - **作業内容**: データベース接続失敗時のtry-exceptを追加
-  - **見積**: 10分
+  - **作業内容**: データベース接続失敗時の try-except を追加
+  - **見積**: 10 分
 
 - [ ] **#15: テストコードの追加**
-  - **作業内容**: pytestを使った単体テスト・統合テストの実装
+
+  - **作業内容**: pytest を使った単体テスト・統合テストの実装
   - **見積**: 数時間〜数日
 
-- [ ] **#16: API設計ドキュメントの作成**
-  - **作業内容**: OpenAPI/Swagger仕様の詳細化
-  - **見積**: 1-2時間
+- [ ] **#16: API 設計ドキュメントの作成**
 
-- [ ] **#17: FastAPIカスタム例外ハンドラーの追加**
+  - **作業内容**: OpenAPI/Swagger 仕様の詳細化
+  - **見積**: 1-2 時間
+
+- [ ] **#17: FastAPI カスタム例外ハンドラーの追加**
   - **作業内容**: カスタム例外用のグローバルハンドラー実装
-  - **見積**: 30分
+  - **見積**: 30 分
 
 ---
 
 ## 📊 進捗トラッキング
 
-| 優先度 | 完了 / 総数 | 進捗率 |
-|--------|------------|--------|
-| 🔴 高   | 0 / 4      | 0%     |
-| 🟡 中   | 0 / 5      | 0%     |
-| 🟢 低   | 0 / 8      | 0%     |
-| **合計** | **0 / 17** | **0%** |
+| 優先度   | 完了 / 総数 | 進捗率 |
+| -------- | ----------- | ------ |
+| 🔴 高    | 0 / 4       | 0%     |
+| 🟡 中    | 0 / 5       | 0%     |
+| 🟢 低    | 0 / 8       | 0%     |
+| **合計** | **0 / 17**  | **0%** |
 
 ---
 
 ## 💡 実施順序の推奨
 
-### Phase 1: クイックフィックス（30分）
+### Phase 1: クイックフィックス（30 分）
+
 1. #3: タイポ修正
-2. #2: commit削除
+2. #2: commit 削除
 3. #1: 例外属性統一
 
-### Phase 2: コード品質改善（1-2時間）
-4. #4: OpenAI API修正
-5. #5: logger化
+### Phase 2: コード品質改善（1-2 時間）
+
+4. #4: OpenAI API 修正
+5. #5: logger 化
 6. #6: クラス名修正
 
-### Phase 3: アーキテクチャ改善（1-2時間）
-7. #7: SQLAlchemy 2.0移行
-8. #8: UUIDバリデーション
-9. #9: Model変換簡潔化
+### Phase 3: アーキテクチャ改善（1-2 時間）
+
+7. #7: SQLAlchemy 2.0 移行
+8. #8: UUID バリデーション
+9. #9: Model 変換簡潔化
 
 ### Phase 4: 長期的改善（必要に応じて）
+
 10. その他の低優先度タスク
 
 ---
@@ -156,12 +174,12 @@
 各タスク完了時に以下を確認：
 
 - [ ] コードの修正が完了
-- [ ] Ruff lintがパス（`ruff check backend/`）
-- [ ] Ruff formatがパス（`ruff format backend/`）
+- [ ] Ruff lint がパス（`ruff check backend/`）
+- [ ] Ruff format がパス（`ruff format backend/`）
 - [ ] 変更箇所の動作確認
 - [ ] 関連するドキュメントの更新
 - [ ] コミットメッセージが明確
-- [ ] PRの作成（必要に応じて）
+- [ ] PR の作成（必要に応じて）
 
 ---
 

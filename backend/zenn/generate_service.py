@@ -1,9 +1,11 @@
-from core.logger import logger
-from core.settings import settings
+from backend.core.logger import get_logger
+from backend.core.settings import settings
 from backend.exceptions.exceptions import GenerateException
 from requests.exceptions import Timeout
 from backend.zenn.zenn_article_schemas import GeneratedResponse, GenerateRequest
 from backend.zenn.zenn_service import ZennService
+
+logger = get_logger(__name__)
 
 
 class GenerateService:
